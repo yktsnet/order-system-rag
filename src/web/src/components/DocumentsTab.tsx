@@ -245,6 +245,9 @@ export default function DocumentsTab() {
         <p className="text-sm text-muted-foreground">
           PDF をここにドラッグ＆ドロップ（.pdf のみ対応）
         </p>
+        <p className="mt-1.5 text-xs text-muted-foreground/70">
+          ※デモ機能のため、ファイルのサーバー保存や解析処理は行われません
+        </p>
       </div>
 
       {/* Filter Buttons */}
