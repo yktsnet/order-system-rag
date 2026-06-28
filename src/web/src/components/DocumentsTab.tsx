@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, DragEvent } from 'react'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, Upload } from 'lucide-react'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
@@ -73,21 +73,20 @@ function DetailRow({ label, value }: { label: string; value?: string | number | 
   if (value == null || value === '') return null
   return (
     <div className="flex justify-between gap-2 text-xs">
-      <span className="shrink-0 text-gray-400">{label}</span>
-      <span className="text-right text-gray-700">{value}</span>
+      <span className="shrink-0 text-muted-foreground">{label}</span>
+      <span className="text-right text-foreground">{value}</span>
     </div>
   )
 }
 
 function PreviewContent({ data }: { data: ExtractedJson }) {
   const doc = data.documents?.[0]
-  if (!doc) return <p className="text-center text-gray-400">データなし</p>
+  if (!doc) return <p className="text-center text-muted-foreground">データなし</p>
 
   const items = doc.items ?? []
 
   return (
     <div className="max-h-[60vh] space-y-4 overflow-y-auto pr-1">
-      {/* 基本情報 */}
       <div className="space-y-1">
         <DetailRow label="取引先" value={doc.vendor_name} />
         <DetailRow label="顧客名" value={doc.customer_name} />
@@ -99,24 +98,23 @@ function PreviewContent({ data }: { data: ExtractedJson }) {
         <DetailRow label="合計" value={doc.invoice_total != null ? `¥${doc.invoice_total.toLocaleString()}` : undefined} />
       </div>
 
-      {/* 品目一覧 */}
       {items.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-medium text-gray-600">品目一覧</p>
+          <p className="mb-2 text-xs font-medium text-muted-foreground">品目一覧</p>
           <table className="w-full text-xs">
             <thead>
-              <tr className="text-gray-400">
+              <tr className="text-muted-foreground">
                 <th className="py-1 text-left font-normal">品名</th>
                 <th className="py-1 text-right font-normal">数量</th>
                 <th className="py-1 text-right font-normal">金額</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y">
               {items.map((item, i) => (
                 <tr key={i}>
-                  <td className="py-1 text-gray-700">{item.description}</td>
-                  <td className="py-1 text-right text-gray-600">{item.quantity ?? '—'}</td>
-                  <td className="py-1 text-right font-mono text-gray-700">
+                  <td className="py-1">{item.description}</td>
+                  <td className="py-1 text-right text-muted-foreground">{item.quantity ?? '—'}</td>
+                  <td className="py-1 text-right font-mono">
                     {item.amount != null ? `¥${item.amount.toLocaleString()}` : '—'}
                   </td>
                 </tr>
@@ -145,7 +143,6 @@ export default function DocumentsTab() {
   const [toast, setToast] = useState<{ message: string; isError: boolean } | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // ── Fetch file list ─────────────────────────────────────────────────────
   useEffect(() => {
     fetch(`${API_BASE}/files`)
       .then((r) => {
@@ -162,7 +159,6 @@ export default function DocumentsTab() {
       })
   }, [])
 
-  // ── Fetch preview when row selected ────────────────────────────────────
   useEffect(() => {
     if (!selectedFile) {
       setPreviewData(null)
@@ -184,14 +180,12 @@ export default function DocumentsTab() {
       })
   }, [selectedFile])
 
-  // ── Toast helper ────────────────────────────────────────────────────────
   const showToast = (message: string, isError = false) => {
     setToast({ message, isError })
     if (toastTimer.current) clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToast(null), 3000)
   }
 
-  // ── D&D handlers ────────────────────────────────────────────────────────
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     setIsDragging(true)
@@ -209,16 +203,12 @@ export default function DocumentsTab() {
     showToast(`「${file.name}」をアップロードしました`)
   }
 
-  // ── Filtered list ───────────────────────────────────────────────────────
   const filtered =
     activeFilter === '全件' ? files : files.filter((f) => f.doc_type === activeFilter)
 
-  // ── Row click ───────────────────────────────────────────────────────────
   const handleRowClick = (sourceFile: string) => {
     setSelectedFile((prev) => (prev === sourceFile ? null : sourceFile))
   }
-
-  // ─────────────────────────────────────────────────────────────────────────
 
   return (
     <div className="space-y-4">
@@ -230,12 +220,13 @@ export default function DocumentsTab() {
         className={[
           'rounded-lg border-2 border-dashed p-6 text-center transition-colors',
           isDragging
-            ? 'border-amber-400 bg-amber-50'
-            : 'border-gray-300 bg-gray-50 hover:border-gray-400',
+            ? 'border-primary/60 bg-primary/5'
+            : 'border-border hover:border-primary/30',
         ].join(' ')}
       >
-        <p className="text-sm text-gray-500">
-          📄 PDF をここにドラッグ＆ドロップ（.pdf のみ対応）
+        <Upload className="mx-auto mb-2 h-5 w-5 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
+          PDF をここにドラッグ＆ドロップ（.pdf のみ対応）
         </p>
       </div>
 
@@ -247,7 +238,6 @@ export default function DocumentsTab() {
             variant={activeFilter === filter ? 'default' : 'outline'}
             size="sm"
             onClick={() => setActiveFilter(filter)}
-            className={activeFilter === filter ? 'bg-amber-500 hover:bg-amber-600' : ''}
           >
             {filter}
           </Button>
@@ -256,14 +246,13 @@ export default function DocumentsTab() {
 
       {/* Table + Preview */}
       <div className="flex gap-4">
-        {/* File table */}
-        <div className="min-w-0 flex-1 overflow-x-auto rounded-lg border border-gray-200 bg-white">
+        <div className="min-w-0 flex-1 overflow-x-auto rounded-lg border bg-card">
           {loading ? (
-            <div className="p-8 text-center text-gray-400">読み込み中…</div>
+            <div className="p-8 text-center text-muted-foreground">読み込み中…</div>
           ) : fetchError ? (
-            <div className="p-8 text-center text-red-500">{fetchError}</div>
+            <div className="p-8 text-center text-destructive">{fetchError}</div>
           ) : filtered.length === 0 ? (
-            <div className="p-8 text-center text-gray-400">帳票がありません</div>
+            <div className="p-8 text-center text-muted-foreground">帳票がありません</div>
           ) : (
             <Table>
               <TableHeader>
@@ -273,7 +262,7 @@ export default function DocumentsTab() {
                   <TableHead className="px-4 py-3">帳票番号</TableHead>
                   <TableHead className="px-4 py-3 text-right">金額</TableHead>
                   <TableHead className="px-4 py-3">日付</TableHead>
-                  <TableHead className="px-4 py-3">PDF</TableHead>
+                  <TableHead className="w-12 px-4 py-3" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -282,10 +271,8 @@ export default function DocumentsTab() {
                     key={file.source_file}
                     onClick={() => handleRowClick(file.source_file)}
                     className={[
-                      'cursor-pointer transition-colors',
-                      selectedFile === file.source_file
-                        ? 'bg-amber-50'
-                        : '',
+                      'cursor-pointer',
+                      selectedFile === file.source_file ? 'bg-primary/5' : '',
                     ].join(' ')}
                   >
                     <TableCell className="px-4 py-3">
@@ -293,12 +280,12 @@ export default function DocumentsTab() {
                         {file.doc_type}
                       </Badge>
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-700">{file.vendor_name || '—'}</TableCell>
-                    <TableCell className="px-4 py-3 font-mono text-gray-600">{file.invoice_id || '—'}</TableCell>
+                    <TableCell className="px-4 py-3">{file.vendor_name || '—'}</TableCell>
+                    <TableCell className="px-4 py-3 font-mono text-muted-foreground">{file.invoice_id || '—'}</TableCell>
                     <TableCell className="px-4 py-3 text-right font-mono">
                       {formatCurrency(file.invoice_total)}
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500">{file.invoice_date ?? '—'}</TableCell>
+                    <TableCell className="px-4 py-3 text-muted-foreground">{file.invoice_date ?? '—'}</TableCell>
                     <TableCell className="px-4 py-3">
                       <Button
                         variant="ghost"
@@ -319,16 +306,15 @@ export default function DocumentsTab() {
           )}
         </div>
 
-        {/* Preview panel */}
         {selectedFile && (
           <Card className="w-80 shrink-0">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-gray-700">JSON プレビュー</CardTitle>
+                <CardTitle className="text-sm font-medium">JSON プレビュー</CardTitle>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
+                  className="h-6 w-6 p-0 text-muted-foreground"
                   onClick={() => setSelectedFile(null)}
                   aria-label="閉じる"
                 >
@@ -338,23 +324,22 @@ export default function DocumentsTab() {
             </CardHeader>
             <CardContent>
               {previewLoading ? (
-                <div className="text-center text-sm text-gray-400">読み込み中…</div>
+                <div className="text-center text-sm text-muted-foreground">読み込み中…</div>
               ) : previewData ? (
                 <PreviewContent data={previewData} />
               ) : (
-                <div className="text-center text-sm text-gray-400">プレビューを取得できません</div>
+                <div className="text-center text-sm text-muted-foreground">プレビューを取得できません</div>
               )}
             </CardContent>
           </Card>
         )}
       </div>
 
-      {/* Toast */}
       {toast && (
         <div
           className={[
             'fixed bottom-6 right-6 z-50 rounded-lg px-4 py-3 text-sm text-white shadow-lg',
-            toast.isError ? 'bg-red-500' : 'bg-green-600',
+            toast.isError ? 'bg-destructive' : 'bg-primary',
           ].join(' ')}
         >
           {toast.message}
