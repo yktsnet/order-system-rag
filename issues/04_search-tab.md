@@ -1,7 +1,7 @@
 ## データ検索タブ
 id: 04
 branch-slug: search-tab
-github_issue:
+github_issue: 7
 status: open
 type: feat
 対象: src/web/src/App.tsx, src/web/src/components/SearchTab.tsx (新規)
