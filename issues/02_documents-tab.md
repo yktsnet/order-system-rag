@@ -2,7 +2,7 @@
 id: 02
 branch-slug: documents-tab
 github_issue: 3
-status: open
+status: close
 type: feat
 対象: src/api/main.py, src/web/src/App.tsx, src/web/src/components/DocumentsTab.tsx (新規)
 内容: 帳票管理タブに帳票一覧・JSON プレビュー・D&D アップロードエリア（ダミー）を実装する
