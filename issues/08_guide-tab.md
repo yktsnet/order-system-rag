@@ -2,7 +2,7 @@
 id: 08
 branch-slug: guide-tab
 github_issue: 13
-status: open
+status: close
 type: feat
 対象: src/web/src/components/GuideTab.tsx (新規), src/web/src/App.tsx
 内容: RAG パイプラインと LangGraph の分岐パターンを図解する静的コンテンツタブを実装する
