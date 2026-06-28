@@ -11,12 +11,14 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from src.generate.rag import ask
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 EXTRACTED_DIR = PROJECT_ROOT / "src" / "ingest" / "extracted"
+SAMPLES_DIR = PROJECT_ROOT / "src" / "samples"
 
 _DOC_TYPE_LABELS: dict[str, str] = {
     "invoice": "請求書",
@@ -123,6 +125,18 @@ def get_file(filename: str):
         raise HTTPException(status_code=404, detail="File not found")
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+@app.get("/pdf/{filename}")
+def get_pdf(filename: str):
+    if not filename.endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="PDF only")
+    path = (SAMPLES_DIR / filename).resolve()
+    if not path.is_relative_to(SAMPLES_DIR.resolve()):
+        raise HTTPException(status_code=400, detail="Invalid filename")
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(path, media_type="application/pdf")
 
 
 @app.get("/health")
