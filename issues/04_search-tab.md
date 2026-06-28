@@ -2,7 +2,7 @@
 id: 04
 branch-slug: search-tab
 github_issue: 7
-status: open
+status: close
 type: feat
 対象: src/web/src/App.tsx, src/web/src/components/SearchTab.tsx (新規)
 内容: データ検索タブに質問入力・RAG 回答カラム・ステップログを実装する（Text-to-SQL カラムは次 Issue）
