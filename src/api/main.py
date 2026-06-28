@@ -7,11 +7,13 @@
 """
 
 import json
+import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from src.generate.rag import ask
@@ -19,6 +21,7 @@ from src.generate.rag import ask
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 EXTRACTED_DIR = PROJECT_ROOT / "src" / "ingest" / "extracted"
 SAMPLES_DIR = PROJECT_ROOT / "src" / "samples"
+DIST_DIR = PROJECT_ROOT / "src" / "web" / "dist"
 
 _DOC_TYPE_LABELS: dict[str, str] = {
     "invoice": "請求書",
@@ -26,11 +29,13 @@ _DOC_TYPE_LABELS: dict[str, str] = {
     "quotation": "見積書",
 }
 
+CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*").split(",")
+
 app = FastAPI(title="order-system-rag", docs_url="/api-docs")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -146,3 +151,12 @@ def get_pdf(filename: str):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+if DIST_DIR.exists():
+
+    @app.get("/")
+    def serve_index():
+        return FileResponse(DIST_DIR / "index.html")
+
+    app.mount("/", StaticFiles(directory=str(DIST_DIR)), name="static")
