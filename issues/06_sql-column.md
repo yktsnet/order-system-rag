@@ -1,7 +1,7 @@
 ## Text-to-SQL カラム連携
 id: 06
 branch-slug: sql-column
-github_issue:
+github_issue: 9
 status: open
 type: feat
 対象: src/web/src/components/SearchTab.tsx
