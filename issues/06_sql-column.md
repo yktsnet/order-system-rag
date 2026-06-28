@@ -2,7 +2,7 @@
 id: 06
 branch-slug: sql-column
 github_issue: 9
-status: open
+status: close
 type: feat
 対象: src/web/src/components/SearchTab.tsx
 内容: データ検索タブの右カラム（Text-to-SQL）を order-system-migration の .NET API に接続し、回答 + ステップログを表示する
