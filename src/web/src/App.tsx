@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import DocumentsTab from './components/DocumentsTab'
 import SearchTab from './components/SearchTab'
+import GuideTab from './components/GuideTab'
 
 type Tab = 'documents' | 'search' | 'guide'
 
@@ -49,9 +50,7 @@ export default function App() {
         ) : activeTab === 'search' ? (
           <SearchTab />
         ) : (
-          <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-            <p className="text-lg">仕組み解説</p>
-          </div>
+          <GuideTab />
         )}
       </main>
     </div>
