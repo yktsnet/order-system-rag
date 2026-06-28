@@ -1,7 +1,7 @@
 ## デプロイ
 id: 10
 branch-slug: deploy
-github_issue:
+github_issue: 15
 status: open
 type: feat
 対象: Dockerfile (新規), docker-compose.yml (新規), infrastructure/deploy.sh (新規), src/api/main.py
