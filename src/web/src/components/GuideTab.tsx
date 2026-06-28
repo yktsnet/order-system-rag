@@ -8,12 +8,12 @@ function ApproachContrast() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* RAG */}
       <div className="border border-border rounded-2xl bg-card shadow-sm p-5 space-y-3">
-        <div className="flex items-center gap-2 text-foreground">
+        <div className="flex items-center gap-3 text-foreground">
           <span className="bg-primary/10 text-primary rounded-lg p-1.5">
             <FileText className="h-5 w-5" />
           </span>
           <div>
-            <div className="font-bold text-base">📂 RAG（帳票検索）</div>
+            <div className="font-bold text-base">RAG（帳票検索）</div>
             <div className="text-xs text-muted-foreground">一枚の書類を深く読む</div>
           </div>
         </div>
@@ -25,12 +25,12 @@ function ApproachContrast() {
 
       {/* Text-to-SQL */}
       <div className="border border-border rounded-2xl bg-card shadow-sm p-5 space-y-3">
-        <div className="flex items-center gap-2 text-foreground">
+        <div className="flex items-center gap-3 text-foreground">
           <span className="bg-primary/10 text-primary rounded-lg p-1.5">
             <Database className="h-5 w-5" />
           </span>
           <div>
-            <div className="font-bold text-base">🧮 Text-to-SQL（集計）</div>
+            <div className="font-bold text-base">Text-to-SQL（集計）</div>
             <div className="text-xs text-muted-foreground">台帳の全体を見渡す</div>
           </div>
         </div>
@@ -72,19 +72,20 @@ function QuestionCompareCard({ question, ragStatus, ragTitle, ragDesc, sqlStatus
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
         {/* RAG */}
-        <div className={`p-4 rounded-xl border flex flex-col justify-between transition-colors ${
-          ragStatus === 'success' ? 'bg-primary/[0.02] border-primary/20' : 'bg-destructive/[0.02] border-destructive/20'
-        }`}>
+        <div className="p-4 rounded-xl border border-border bg-card flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="font-bold text-xs text-muted-foreground flex items-center gap-1">📂 RAG (検索)</span>
+              <span className="font-bold text-xs text-muted-foreground flex items-center gap-1.5">
+                <FileText className="h-3.5 w-3.5 text-muted-foreground/80" />
+                RAG (検索)
+              </span>
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${
                 ragStatus === 'success' ? 'bg-primary/10 text-primary' : 'bg-destructive/10 text-destructive'
               }`}>
                 {ragStatus === 'success' ? '✅ 得意' : '⚠️ 不得意'}
               </span>
             </div>
-            <h4 className={`text-sm font-extrabold ${ragStatus === 'success' ? 'text-primary' : 'text-destructive'}`}>
+            <h4 className="text-sm font-extrabold text-foreground">
               {ragTitle}
             </h4>
             <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
@@ -94,19 +95,20 @@ function QuestionCompareCard({ question, ragStatus, ragTitle, ragDesc, sqlStatus
         </div>
 
         {/* Text-to-SQL */}
-        <div className={`p-4 rounded-xl border flex flex-col justify-between transition-colors ${
-          sqlStatus === 'success' ? 'bg-primary/[0.02] border-primary/20' : 'bg-destructive/[0.02] border-destructive/20'
-        }`}>
+        <div className="p-4 rounded-xl border border-border bg-card flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="font-bold text-xs text-muted-foreground flex items-center gap-1">🧮 Text-to-SQL (集計)</span>
+              <span className="font-bold text-xs text-muted-foreground flex items-center gap-1.5">
+                <Database className="h-3.5 w-3.5 text-muted-foreground/80" />
+                Text-to-SQL (集計)
+              </span>
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${
                 sqlStatus === 'success' ? 'bg-primary/10 text-primary' : 'bg-destructive/10 text-destructive'
               }`}>
                 {sqlStatus === 'success' ? '✅ 得意' : '⚠️ 不得意'}
               </span>
             </div>
-            <h4 className={`text-sm font-extrabold ${sqlStatus === 'success' ? 'text-primary' : 'text-destructive'}`}>
+            <h4 className="text-sm font-extrabold text-foreground">
               {sqlTitle}
             </h4>
             <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
@@ -199,12 +201,12 @@ export default function GuideTab() {
         <h2 className="text-lg font-bold tracking-tight text-foreground">
           まとめ
         </h2>
-        <div className="border border-primary/20 rounded-2xl bg-primary/5 shadow-sm p-6 space-y-3">
+        <div className="border border-border rounded-2xl bg-card shadow-sm p-6 space-y-3">
           <p className="text-base md:text-lg text-foreground leading-relaxed font-medium">
-            書類の中身を知りたいなら <strong className="text-primary">RAG</strong>、全件を数えて並べたいなら <strong className="text-primary">Text-to-SQL</strong>。
+            書類の中身を知りたいなら <strong>RAG</strong>、全件を数えて並べたいなら <strong>Text-to-SQL</strong>。
             優劣ではなく、<strong>質問の性質が道具を決める</strong>。
           </p>
-          <p className="text-sm text-muted-foreground leading-relaxed border-t border-primary/15 pt-3">
+          <p className="text-sm text-muted-foreground leading-relaxed border-t border-border pt-3">
             「データ検索」タブでは、同じ質問を両方に投げて回答を並べて確かめられます。
           </p>
         </div>

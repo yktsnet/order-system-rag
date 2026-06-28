@@ -37,7 +37,7 @@ export default function App() {
                 value="guide"
                 className="rounded-none border-b-2 border-transparent px-5 py-3 text-sm font-medium text-muted-foreground data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
-                仕組み解説
+                使い分けガイド
               </TabsTrigger>
             </TabsList>
           </Tabs>
