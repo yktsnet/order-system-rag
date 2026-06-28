@@ -23,7 +23,7 @@ nix-shell -p 'python3.withPackages (ps: with ps; [ google-genai azure-search-doc
 RAG API 起動:
 ```
 nix-shell -p 'python3.withPackages (ps: with ps; [
-  google-genai azure-search-documents python-dotenv fastapi uvicorn
+  google-genai azure-search-documents python-dotenv fastapi uvicorn langgraph
 ])' --run "uvicorn src.api.main:app --reload --port 8002"
 ```
 

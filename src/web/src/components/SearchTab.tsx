@@ -25,6 +25,7 @@ interface RagResponse {
   generation_model: string
   query_embedding_dim: number
   search_results: SearchResult[]
+  route: 'sql' | 'rag' | 'both'
 }
 
 interface SqlResponse {
@@ -59,7 +60,7 @@ const SUGGEST_QUESTIONS = [
 
 function StepLog({ response }: { response: RagResponse }) {
   const [isOpen, setIsOpen] = useState(false)
-  const { query_embedding_dim, search_results, generation_model, refused } = response
+  const { query_embedding_dim, search_results, generation_model, refused, route } = response
 
   return (
     <div className="space-y-2 mt-1">
@@ -79,6 +80,10 @@ function StepLog({ response }: { response: RagResponse }) {
 
       {isOpen && (
         <div className="space-y-2 rounded-md bg-muted/30 p-3 font-mono text-[11px] leading-relaxed border border-muted/30 animate-in fade-in duration-200">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary/70" />
+            <span>ルーティング → {route === 'sql' ? 'SQL 向き' : route === 'rag' ? 'RAG 向き' : '両方'}</span>
+          </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary/70" />
             <span>embedding 生成 (gemini-embedding-001, {query_embedding_dim}次元)</span>
@@ -354,6 +359,18 @@ export default function SearchTab() {
                     </div>
                   </div>
                 </div>
+
+                {/* ルーティングバッジ */}
+                {turn.ragResponse?.route && (
+                  <div className="flex justify-center">
+                    <Badge variant="outline" className="text-xs gap-1.5 px-3 py-1">
+                      <Sparkles className="h-3 w-3" />
+                      {turn.ragResponse.route === 'sql' && 'この質問は SQL 向き'}
+                      {turn.ragResponse.route === 'rag' && 'この質問は RAG 向き'}
+                      {turn.ragResponse.route === 'both' && 'この質問は両方に関係'}
+                    </Badge>
+                  </div>
+                )}
 
                 {/* 2カラム回答エリア */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in slide-in-from-bottom-2 duration-300">

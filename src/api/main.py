@@ -2,7 +2,7 @@
 
 実行:
   nix-shell -p 'python3.withPackages (ps: with ps; [
-    google-genai azure-search-documents python-dotenv fastapi uvicorn
+    google-genai azure-search-documents python-dotenv fastapi uvicorn langgraph
   ])' --run "uvicorn src.api.main:app --reload --port 8002"
 """
 
@@ -55,6 +55,7 @@ class RagResponseModel(BaseModel):
     generation_model: str
     query_embedding_dim: int
     search_results: list[SearchResultItem]
+    route: str
 
 
 @app.post("/rag", response_model=RagResponseModel)
@@ -76,6 +77,7 @@ def rag_query(req: QueryRequest):
             )
             for sr in result.search_results
         ],
+        route=result.route,
     )
 
 
