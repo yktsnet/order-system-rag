@@ -1,5 +1,6 @@
 google-genai
 azure-search-documents
+azure-ai-documentintelligence
 python-dotenv
 fastapi
 uvicorn[standard]

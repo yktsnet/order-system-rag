@@ -1,4 +1,8 @@
+[🇯🇵 日本語](README.md) | [🇬🇧 English](README.en.md)
+
 # order-system-rag
+
+[![CI](https://github.com/yktsnet/order-system-rag/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/yktsnet/order-system-rag/actions/workflows/ci.yml)
 
 発注ドメインの取引先帳票 PDF（非構造データ）を Azure Document Intelligence + AI Search で RAG 化し、Text-to-SQL との手法比較 Demo を通じて「質問の性質でツールを選ぶ設計判断」を実証するポートフォリオ。
 
