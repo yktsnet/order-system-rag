@@ -1,51 +1,55 @@
 import { useState } from 'react'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import DocumentsTab from './components/DocumentsTab'
 
-type Tab = '帳票管理' | 'データ検索' | '仕組み解説'
-
-const TABS: Tab[] = ['帳票管理', 'データ検索', '仕組み解説']
+type Tab = 'documents' | 'search' | 'guide'
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('帳票管理')
+  const [activeTab, setActiveTab] = useState<Tab>('documents')
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-amber-600 text-white shadow-md">
-        <div className="mx-auto max-w-5xl px-4 py-4">
+        <div className="mx-auto max-w-6xl px-4 py-4">
           <h1 className="text-xl font-bold tracking-wide">帳票管理システム</h1>
         </div>
       </header>
 
-      {/* Tab bar */}
       <nav className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="mx-auto max-w-5xl px-4">
-          <div className="flex gap-1">
-            {TABS.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={[
-                  'px-5 py-3 text-sm font-medium border-b-2 transition-colors',
-                  activeTab === tab
-                    ? 'border-amber-500 text-amber-700'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                ].join(' ')}
+        <div className="mx-auto max-w-6xl px-4">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Tab)}>
+            <TabsList className="h-auto bg-transparent p-0">
+              <TabsTrigger
+                value="documents"
+                className="rounded-none border-b-2 border-transparent px-5 py-3 text-sm font-medium data-[state=active]:border-amber-500 data-[state=active]:text-amber-700 data-[state=active]:shadow-none"
               >
-                {tab}
-              </button>
-            ))}
-          </div>
+                帳票管理
+              </TabsTrigger>
+              <TabsTrigger
+                value="search"
+                className="rounded-none border-b-2 border-transparent px-5 py-3 text-sm font-medium data-[state=active]:border-amber-500 data-[state=active]:text-amber-700 data-[state=active]:shadow-none"
+              >
+                データ検索
+              </TabsTrigger>
+              <TabsTrigger
+                value="guide"
+                className="rounded-none border-b-2 border-transparent px-5 py-3 text-sm font-medium data-[state=active]:border-amber-500 data-[state=active]:text-amber-700 data-[state=active]:shadow-none"
+              >
+                仕組み解説
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </nav>
 
-      {/* Tab content */}
-      <main className="mx-auto max-w-5xl px-4 py-8">
-        {activeTab === '帳票管理' ? (
+      <main className="mx-auto max-w-6xl px-4 py-8">
+        {activeTab === 'documents' ? (
           <DocumentsTab />
         ) : (
           <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-400">
-            <p className="text-lg">{activeTab}</p>
+            <p className="text-lg">
+              {activeTab === 'search' ? 'データ検索' : '仕組み解説'}
+            </p>
           </div>
         )}
       </main>

@@ -1,4 +1,11 @@
 import { useState, useEffect, useRef, DragEvent } from 'react'
+import { ExternalLink } from 'lucide-react'
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -54,11 +61,10 @@ function toJsonFilename(sourceFile: string): string {
   return sourceFile.replace(/\.pdf$/i, '.json')
 }
 
-function docTypeBadgeClass(docType: string): string {
-  if (docType === '請求書') return 'bg-blue-100 text-blue-700'
-  if (docType === '見積書') return 'bg-green-100 text-green-700'
-  if (docType === '納品書') return 'bg-orange-100 text-orange-700'
-  return 'bg-gray-100 text-gray-600'
+function docTypeBadgeVariant(docType: string): 'default' | 'secondary' | 'outline' {
+  if (docType === '請求書') return 'default'
+  if (docType === '見積書') return 'secondary'
+  return 'outline'
 }
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -236,18 +242,15 @@ export default function DocumentsTab() {
       {/* Filter Buttons */}
       <div className="flex gap-2">
         {FILTERS.map((filter) => (
-          <button
+          <Button
             key={filter}
+            variant={activeFilter === filter ? 'default' : 'outline'}
+            size="sm"
             onClick={() => setActiveFilter(filter)}
-            className={[
-              'rounded px-3 py-1 text-sm font-medium transition-colors',
-              activeFilter === filter
-                ? 'bg-amber-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
-            ].join(' ')}
+            className={activeFilter === filter ? 'bg-amber-500 hover:bg-amber-600' : ''}
           >
             {filter}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -262,69 +265,87 @@ export default function DocumentsTab() {
           ) : filtered.length === 0 ? (
             <div className="p-8 text-center text-gray-400">帳票がありません</div>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="border-b bg-gray-50 text-left text-xs text-gray-500">
-                <tr>
-                  <th className="px-4 py-3">種別</th>
-                  <th className="px-4 py-3">取引先名</th>
-                  <th className="px-4 py-3">帳票番号</th>
-                  <th className="px-4 py-3 text-right">金額</th>
-                  <th className="px-4 py-3">日付</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="px-4 py-3">種別</TableHead>
+                  <TableHead className="px-4 py-3">取引先名</TableHead>
+                  <TableHead className="px-4 py-3">帳票番号</TableHead>
+                  <TableHead className="px-4 py-3 text-right">金額</TableHead>
+                  <TableHead className="px-4 py-3">日付</TableHead>
+                  <TableHead className="px-4 py-3">PDF</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {filtered.map((file) => (
-                  <tr
+                  <TableRow
                     key={file.source_file}
                     onClick={() => handleRowClick(file.source_file)}
                     className={[
                       'cursor-pointer transition-colors',
                       selectedFile === file.source_file
                         ? 'bg-amber-50'
-                        : 'hover:bg-gray-50',
+                        : '',
                     ].join(' ')}
                   >
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded px-2 py-0.5 text-xs font-medium ${docTypeBadgeClass(file.doc_type)}`}
-                      >
+                    <TableCell className="px-4 py-3">
+                      <Badge variant={docTypeBadgeVariant(file.doc_type)}>
                         {file.doc_type}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-700">{file.vendor_name || '—'}</td>
-                    <td className="px-4 py-3 font-mono text-gray-600">{file.invoice_id || '—'}</td>
-                    <td className="px-4 py-3 text-right font-mono">
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-700">{file.vendor_name || '—'}</TableCell>
+                    <TableCell className="px-4 py-3 font-mono text-gray-600">{file.invoice_id || '—'}</TableCell>
+                    <TableCell className="px-4 py-3 text-right font-mono">
                       {formatCurrency(file.invoice_total)}
-                    </td>
-                    <td className="px-4 py-3 text-gray-500">{file.invoice_date ?? '—'}</td>
-                  </tr>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-500">{file.invoice_date ?? '—'}</TableCell>
+                    <TableCell className="px-4 py-3">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          window.open(`${API_BASE}/pdf/${file.source_file}`, '_blank')
+                        }}
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           )}
         </div>
 
         {/* Preview panel */}
         {selectedFile && (
-          <div className="w-80 shrink-0 rounded-lg border border-gray-200 bg-white p-4">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-700">JSON プレビュー</h3>
-              <button
-                onClick={() => setSelectedFile(null)}
-                className="text-gray-400 hover:text-gray-600"
-                aria-label="閉じる"
-              >
-                ✕
-              </button>
-            </div>
-            {previewLoading ? (
-              <div className="text-center text-sm text-gray-400">読み込み中…</div>
-            ) : previewData ? (
-              <PreviewContent data={previewData} />
-            ) : (
-              <div className="text-center text-sm text-gray-400">プレビューを取得できません</div>
-            )}
-          </div>
+          <Card className="w-80 shrink-0">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-gray-700">JSON プレビュー</CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
+                  onClick={() => setSelectedFile(null)}
+                  aria-label="閉じる"
+                >
+                  ✕
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {previewLoading ? (
+                <div className="text-center text-sm text-gray-400">読み込み中…</div>
+              ) : previewData ? (
+                <PreviewContent data={previewData} />
+              ) : (
+                <div className="text-center text-sm text-gray-400">プレビューを取得できません</div>
+              )}
+            </CardContent>
+          </Card>
         )}
       </div>
 
