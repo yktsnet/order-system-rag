@@ -15,10 +15,13 @@ __pycache__/
 *.pyc
 *.pyo
 *.egg-info/
-dist/
 build/
 .venv/
 venv/
+
+# Node.js / Frontend
+node_modules/
+dist/
 
 # Task & Handover documents
 HANDOVER.md
