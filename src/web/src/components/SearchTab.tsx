@@ -48,7 +48,7 @@ interface ChatTurn {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const RAG_API_BASE = import.meta.env.VITE_RAG_API_BASE ?? 'http://localhost:8002'
+const RAG_API_BASE = import.meta.env.VITE_RAG_API_BASE ?? ''
 const SQL_API_BASE = import.meta.env.VITE_SQL_API_BASE ?? 'http://localhost:5153'
 
 const SUGGEST_QUESTIONS = [

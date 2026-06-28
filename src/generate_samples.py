@@ -22,41 +22,43 @@ from reportlab.platypus import (
 )
 from reportlab.lib.styles import ParagraphStyle
 
+import subprocess
 import platform
 
-# OSや環境に応じたフォント候補パス
-FONT_PATHS = []
-if platform.system() == "Darwin":
+def find_japanese_font():
+    # 1. fc-list (fontconfig) による動的検出を最優先（NixOS等で有効）
+    try:
+        out = subprocess.check_output(["fc-list", ":lang=ja", "file"], text=True)
+        for line in out.splitlines():
+            parts = line.split(":")
+            if parts:
+                path = parts[0].strip()
+                # ReportLabはPostScriptアウトライン(.otf や .otf.ttc)をサポートしていないため除外する。
+                # 純粋な TrueType (.ttf) のみを優先的に採用する。
+                if os.path.exists(path) and path.lower().endswith(".ttf") and ".otf" not in path.lower():
+                    return path
+    except Exception:
+        pass
+
+    # 2. 静的なデフォルト候補パス
     FONT_PATHS = [
         "/Library/Fonts/Arial Unicode.ttf",
         "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
         "/System/Library/Fonts/PingFang.ttc",
         "/System/Library/Fonts/Hiragino Sans GB.ttc",
     ]
-else:
-    FONT_PATHS = [
-        "/run/current-system/sw/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
-        "/run/current-system/sw/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/run/current-system/sw/share/fonts/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf",
-        "/usr/share/fonts/opentype/ipafont/ipag.ttf",
-    ]
+    for path in FONT_PATHS:
+        if os.path.exists(path):
+            return path
+    return None
 
-font_path = None
-for path in FONT_PATHS:
-    if os.path.exists(path):
-        font_path = path
-        break
+font_path = find_japanese_font()
 
 if font_path:
     pdfmetrics.registerFont(TTFont("ArialUni", font_path))
 else:
     print("Warning: No Japanese font found. Falling back to default Helvetica.")
     try:
-        # reportlabのコアフォントであるHelveticaで登録（クラッシュ回避）
         pdfmetrics.registerFont(TTFont("ArialUni", "Helvetica"))
     except Exception:
         pass

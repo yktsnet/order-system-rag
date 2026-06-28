@@ -48,7 +48,7 @@ type DocType = '見積書' | '請求書' | '納品書'
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const FILTERS: DocType[] = ['見積書', '請求書', '納品書']
-const API_BASE = import.meta.env.VITE_RAG_API_BASE ?? 'http://localhost:8002'
+const API_BASE = import.meta.env.VITE_RAG_API_BASE ?? ''
 
 const typePriority: Record<string, number> = {
   '見積書': 1,
