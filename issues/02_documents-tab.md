@@ -1,7 +1,7 @@
 ## 帳票管理タブ
 id: 02
 branch-slug: documents-tab
-github_issue:
+github_issue: 3
 status: open
 type: feat
 対象: src/api/main.py, src/web/src/App.tsx, src/web/src/components/DocumentsTab.tsx (新規)
