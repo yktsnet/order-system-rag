@@ -1,0 +1,42 @@
+{
+  "source_file": "invoice_07.pdf",
+  "full_text": "請 求 書\n中央オフィス機器株式会社 御中\n請No. INV-2026-0007\n〒100-0005\n発行日 2026年5月18日\n東京都千代田区丸の内1-9-1\n広島商工株式会社\n〒730-0011\n広島県広島市中区基町7-7-7\nTEL: 061-246-5339\n下記のとおりご請求いたします。\nNo.\n品名\n数量\n単価\n金額\n1\nトナーカートリッジ\n18\n8,500\n153,000\n2\nコピー用紙(500枚)\n9\n1,500\n13,500\n小計\n166,500\n消費税(10%)\n16,650\n合計\n183,150\n御請求金額\n¥183,150-(税込)\n(振込先)\n三井住友銀行 名古屋支店\n預金種別:普通\nお支払期限:2026年6月17日\n口座番号:3456789\n口座名義:広島商工株式会社\n備考: :unselected: :unselected: :unselected:",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "広島商工株式会社",
+      "vendor_address": "広島県広島市中区基町7-7-7",
+      "customer_name": null,
+      "customer_address": null,
+      "invoice_id": "INV-2026-0007",
+      "invoice_date": "2026-05-18",
+      "due_date": "2026-06-17",
+      "subtotal": 166500.0,
+      "total_tax": 16650.0,
+      "invoice_total": 183150.0,
+      "items": [
+        {
+          "description": "トナーカートリッジ",
+          "description_confidence": 0.899,
+          "quantity": 18.0,
+          "quantity_confidence": 0.908,
+          "unitprice": 8500.0,
+          "unitprice_confidence": 0.907,
+          "amount": 153000.0,
+          "amount_confidence": 0.908
+        },
+        {
+          "description": "コピー用紙(500枚)",
+          "description_confidence": 0.902,
+          "quantity": 9.0,
+          "quantity_confidence": 0.91,
+          "unitprice": 1500.0,
+          "unitprice_confidence": 0.908,
+          "amount": 13500.0,
+          "amount_confidence": 0.907
+        }
+      ]
+    }
+  ]
+}

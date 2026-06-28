@@ -1,0 +1,32 @@
+{
+  "source_file": "invoice_08.pdf",
+  "full_text": "請求書\n中央オフィス機器株式会社 御中\n請No. INV-2026-0008\n〒100-0005\n発行日 2026年6月13日\n東京都千代田区丸の内1-9-1\n福岡商事株式会社\n〒810-0001\n福岡県福岡市中央区天神8-8-8\nTEL: 014-873-1771\n下記のとおりご請求いたします。\nNo.\n品名\n数量\n単価\n金額\n1\nホワイトボード\n21\n28,000\n588,000\n小計\n588,000\n消費税(10%)\n58,800\n合計\n646,800\n御請求金額\n¥646,800-(税込)\n(振込先)\n京都銀行 本店営業部\n預金種別:普通\nお支払期限:2026年7月13日\n口座番号:4567890\n口座名義:福岡商事株式会社 :unselected:\n備考: :unselected:",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "福岡商事株式会社",
+      "vendor_address": "福岡県福岡市中央区天神8-8-8",
+      "customer_name": null,
+      "customer_address": null,
+      "invoice_id": "INV-2026-0008",
+      "invoice_date": "2026-06-13",
+      "due_date": "2026-07-13",
+      "subtotal": 588000.0,
+      "total_tax": 58800.0,
+      "invoice_total": 646800.0,
+      "items": [
+        {
+          "description": "ホワイトボード",
+          "description_confidence": 0.914,
+          "quantity": 21.0,
+          "quantity_confidence": 0.915,
+          "unitprice": 28000.0,
+          "unitprice_confidence": 0.916,
+          "amount": 588000.0,
+          "amount_confidence": 0.915
+        }
+      ]
+    }
+  ]
+}

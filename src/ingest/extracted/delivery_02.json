@@ -1,0 +1,42 @@
+{
+  "source_file": "delivery_02.pdf",
+  "full_text": "納品書\n中央オフィス機器株式会社 御中\n納No. D-2026-0002\n〒100-0005\n発行日 2026年5月25日\n東京都千代田区丸の内1-9-1\n大阪物産株式会社\n₸ 530-0001\n大阪府大阪市北区梅田2-2-2\nTEL: 067-716-1434\n下記のとおり納品いたします。\n注文番号:20260223-002\n納品日:2026年5月25日\nNo.\n品名\n数量\n単価\n金額\n摘要\n1\nトナーカートリッジ\n23\n8,500\n195,500\n2\nクリアファイル(10枚)\n18\n600\n10,800\n小計\n206,300\n消費税(10%)\n20,630\n合計\n226,930\n納品合計金額\n¥226,930-(税込)\n検 印\n受領印",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "中央オフィス機器株式会社",
+      "vendor_address": "東京都千代田区丸の内1-9-1",
+      "customer_name": null,
+      "customer_address": null,
+      "invoice_id": "D-2026-0002",
+      "invoice_date": "2026-05-25",
+      "due_date": null,
+      "subtotal": 206300.0,
+      "total_tax": 20630.0,
+      "invoice_total": 226930.0,
+      "items": [
+        {
+          "description": "トナーカートリッジ",
+          "description_confidence": 0.949,
+          "quantity": 23.0,
+          "quantity_confidence": 0.954,
+          "unitprice": 8500.0,
+          "unitprice_confidence": 0.954,
+          "amount": 195500.0,
+          "amount_confidence": 0.954
+        },
+        {
+          "description": "クリアファイル(10枚)",
+          "description_confidence": 0.958,
+          "quantity": 18.0,
+          "quantity_confidence": 0.954,
+          "unitprice": 600.0,
+          "unitprice_confidence": 0.954,
+          "amount": 10800.0,
+          "amount_confidence": 0.954
+        }
+      ]
+    }
+  ]
+}

@@ -1,2 +1,3 @@
-#PLAN.md
-#JUDGE.md
+.env
+__pycache__/
+*.pyc

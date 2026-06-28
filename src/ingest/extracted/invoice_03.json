@@ -1,0 +1,52 @@
+{
+  "source_file": "invoice_03.pdf",
+  "full_text": "請求書\n中央オフィス機器株式会社 御中\n請No. INV-2026-0003\n〒100-0005\n発行日 2026年6月4日\n東京都千代田区丸の内1-9-1\n株式会社札幌オフィス\n〒060-0001\n北海道札幌市中央区北1条西3-3\nTEL: 038-259-4527\n下記のとおりご請求いたします。\nNo.\n品名\n数量\n単価\n金額\n1\nデスクライト\n4\n12,000\n48,000\n2\nトナーカートリッジ\n12\n8,500\n102,000\n3\nロッカー\n28\n45,000\n1,260,000\n小計\n1,410,000\n消費税(10%)\n141,000\n合計\n1,551,000\n御請求金額\n¥1,551,000-(税込)\n(振込先)\n京都銀行 本店営業部\n預金種別:普通\nお支払期限:2026年7月4日\n口座番号:4567890\n口座名義:株式会社札幌オフィス\n備考: :unselected: :unselected: :unselected: :selected:",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "株式会社札幌オフィス",
+      "vendor_address": "東京都千代田区丸の内1-9-1",
+      "customer_name": null,
+      "customer_address": null,
+      "invoice_id": "INV-2026-0003",
+      "invoice_date": "2026-06-04",
+      "due_date": "2026-07-04",
+      "subtotal": 1410000.0,
+      "total_tax": 141000.0,
+      "invoice_total": 1551000.0,
+      "items": [
+        {
+          "description": "デスクライト",
+          "description_confidence": 0.913,
+          "quantity": 4.0,
+          "quantity_confidence": 0.922,
+          "unitprice": 12000.0,
+          "unitprice_confidence": 0.922,
+          "amount": 48000.0,
+          "amount_confidence": 0.922
+        },
+        {
+          "description": "トナーカートリッジ",
+          "description_confidence": 0.906,
+          "quantity": 12.0,
+          "quantity_confidence": 0.922,
+          "unitprice": 8500.0,
+          "unitprice_confidence": 0.922,
+          "amount": 102000.0,
+          "amount_confidence": 0.922
+        },
+        {
+          "description": "ロッカー",
+          "description_confidence": 0.92,
+          "quantity": 28.0,
+          "quantity_confidence": 0.922,
+          "unitprice": 45000.0,
+          "unitprice_confidence": 0.922,
+          "amount": 1260000.0,
+          "amount_confidence": 0.922
+        }
+      ]
+    }
+  ]
+}

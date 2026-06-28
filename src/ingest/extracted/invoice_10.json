@@ -1,0 +1,72 @@
+{
+  "source_file": "invoice_10.pdf",
+  "full_text": "請求書\n中央オフィス機器株式会社 御中\n請No. INV-2026-0010\n〒100-0005\n発行日 2026年6月22日\n東京都千代田区丸の内1-9-1\n株式会社沖縄オフィスサプライ\n₸ 900-0015\n沖縄県那覇市久茂地3-4-5\nTEL: 067-208-5889\n下記のとおりご請求いたします。\nNo.\n品名\n数量\n単価\n金額\n1\nロッカー\n18\n45,000\n810,000\n2\nホワイトボード\n30\n28,000\n840,000\n3\n会議用テーブル\n1\n95,000\n95,000\n4\nA3レーザープリンター\n16\n223,488\n3,575,808\n5\n防音パネル(4枚セット)\n29\n72,000\n2,088,000\n小計\n7,408,808\n消費税(10%)\n740,880\n合計\n8,149,688\n御請求金額\n¥8,149,688-(税込)\n(振込先)\n三菱UFJ銀行 京都支店\n預金種別:普通\nお支払期限:2026年7月22日\n口座番号:1234567\n口座名義:株式会社沖縄オフィスサプライ\n備考: :unselected: :unselected: :unselected: :unselected:",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "株式会社沖縄オフィスサプライ",
+      "vendor_address": "東京都千代田区丸の内1-9-1",
+      "customer_name": "株式会社沖縄オフィスサプライ",
+      "customer_address": "沖縄県那覇市久茂地3-4-5",
+      "invoice_id": "INV-2026-0010",
+      "invoice_date": "2026-06-22",
+      "due_date": "2026-07-22",
+      "subtotal": 7408808.0,
+      "total_tax": 740880.0,
+      "invoice_total": 8149688.0,
+      "items": [
+        {
+          "description": "ロッカー",
+          "description_confidence": 0.919,
+          "quantity": 18.0,
+          "quantity_confidence": 0.913,
+          "unitprice": 45000.0,
+          "unitprice_confidence": 0.913,
+          "amount": 810000.0,
+          "amount_confidence": 0.913
+        },
+        {
+          "description": "ホワイトボード",
+          "description_confidence": 0.908,
+          "quantity": 30.0,
+          "quantity_confidence": 0.913,
+          "unitprice": 28000.0,
+          "unitprice_confidence": 0.913,
+          "amount": 840000.0,
+          "amount_confidence": 0.913
+        },
+        {
+          "description": "会議用テーブル",
+          "description_confidence": 0.908,
+          "quantity": 1.0,
+          "quantity_confidence": 0.915,
+          "unitprice": 95000.0,
+          "unitprice_confidence": 0.913,
+          "amount": 95000.0,
+          "amount_confidence": 0.913
+        },
+        {
+          "description": "A3レーザープリンター",
+          "description_confidence": 0.9,
+          "quantity": 16.0,
+          "quantity_confidence": 0.913,
+          "unitprice": 223488.0,
+          "unitprice_confidence": 0.914,
+          "amount": 3575808.0,
+          "amount_confidence": 0.914
+        },
+        {
+          "description": "防音パネル(4枚セット)",
+          "description_confidence": 0.914,
+          "quantity": 29.0,
+          "quantity_confidence": 0.913,
+          "unitprice": 72000.0,
+          "unitprice_confidence": 0.913,
+          "amount": 2088000.0,
+          "amount_confidence": 0.914
+        }
+      ]
+    }
+  ]
+}

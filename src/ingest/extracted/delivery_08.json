@@ -1,0 +1,32 @@
+{
+  "source_file": "delivery_08.pdf",
+  "full_text": "納品書\n中央オフィス機器株式会社 御中\n納No. D-2026-0008\n〒100-0005\n発行日 2026年6月8日\n東京都千代田区丸の内1-9-1\n福岡商事株式会社\n〒810-0001\n福岡県福岡市中央区天神8-8-8\nTEL: 014-873-1771\n下記のとおり納品いたします。\n注文番号:20260524-003\n納品日:2026年6月8日\nNo.\n品名\n数量\n単価\n金額\n摘要\n1\nホワイトボード\n21\n28,000\n588,000\n小計\n588,000\n消費税(10%)\n58,800\n合計\n646,800\n納品合計金額\n¥646,800-(税込)\n検 印\n受領印",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "福岡商事株式会社",
+      "vendor_address": "福岡県福岡市中央区天神8-8-8",
+      "customer_name": null,
+      "customer_address": null,
+      "invoice_id": "D-2026-0008",
+      "invoice_date": "2026-06-08",
+      "due_date": null,
+      "subtotal": 588000.0,
+      "total_tax": 58800.0,
+      "invoice_total": 646800.0,
+      "items": [
+        {
+          "description": "ホワイトボード",
+          "description_confidence": 0.921,
+          "quantity": 21.0,
+          "quantity_confidence": 0.937,
+          "unitprice": 28000.0,
+          "unitprice_confidence": 0.937,
+          "amount": 588000.0,
+          "amount_confidence": 0.937
+        }
+      ]
+    }
+  ]
+}

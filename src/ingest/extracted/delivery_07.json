@@ -1,0 +1,42 @@
+{
+  "source_file": "delivery_07.pdf",
+  "full_text": "納品書\n中央オフィス機器株式会社 御中\n納No. D-2026-0007\n〒100-0005\n発行日 2026年4月19日\n東京都千代田区丸の内1-9-1\n広島商工株式会社\n〒730-0011\n広島県広島市中区基町7-7-7\nTEL: 061-246-5339\n下記のとおり納品いたします。\n注文番号:20260226-002\n納品日:2026年4月19日\nNo.\n品名\n数量\n単価\n金額\n摘要\n1\nトナーカートリッジ\n18\n8,500\n153,000\n2\nコピー用紙(500枚)\n9\n1,500\n13,500\n小計\n166,500\n消費税(10%)\n16,650\n合計\n183,150\n納品合計金額\n¥183,150-(税込)\n検 印\n受領印 :unselected:",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "広島商工株式会社",
+      "vendor_address": "東京都千代田区丸の内1-9-1",
+      "customer_name": null,
+      "customer_address": null,
+      "invoice_id": null,
+      "invoice_date": "2026-04-19",
+      "due_date": null,
+      "subtotal": 166500.0,
+      "total_tax": 16650.0,
+      "invoice_total": 183150.0,
+      "items": [
+        {
+          "description": "トナーカートリッジ",
+          "description_confidence": 0.918,
+          "quantity": 18.0,
+          "quantity_confidence": 0.934,
+          "unitprice": 8500.0,
+          "unitprice_confidence": 0.934,
+          "amount": 153000.0,
+          "amount_confidence": 0.934
+        },
+        {
+          "description": "コピー用紙(500枚)",
+          "description_confidence": 0.918,
+          "quantity": 9.0,
+          "quantity_confidence": 0.934,
+          "unitprice": 1500.0,
+          "unitprice_confidence": 0.934,
+          "amount": 13500.0,
+          "amount_confidence": 0.934
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "source_file": "quotation_01.pdf",
+  "full_text": "御見積書\n中央オフィス機器株式会社 御中\n御No. Q-2026-0001\n〒100-0005\n発行日 2026年5月18日\n東京都千代田区丸の内1-9-1\n株式会社東京商事\n〒 100-0001\n東京都千代田区丸の内1-1-1\nTEL: 084-214-1409\n件名\nオフィス用品納入\n納期:受注後 7 営業日\n支払条件\n月末締め翌々月10日払い\n有効期限: 発行日より 90 日間\nNo.\n品名\n数量\n単価\n金額\n1\nシュレッダー\n24\n35,000\n840,000\n2\nトナーカートリッジ\n4\n8,500\n34,000\n3\nホワイトボード\n22\n28,000\n616,000\n小計\n1,490,000\n消費税(10%)\n149,000\n合計\n1,639,000\n御見積金額\n¥1,639,000-(税込)\n備考:\n上記金額には消費税(10%)を含みます。",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "中央オフィス機器株式会社",
+      "vendor_address": "100-0005\n東京都千代田区丸の内1-9-1",
+      "customer_name": "株式会社東京商事",
+      "customer_address": "東京都千代田区丸の内1-1-1",
+      "invoice_id": "Q-2026-0001",
+      "invoice_date": "2026-05-18",
+      "due_date": null,
+      "subtotal": 1490000.0,
+      "total_tax": 149000.0,
+      "invoice_total": 1639000.0,
+      "items": [
+        {
+          "description": "シュレッダー",
+          "description_confidence": 0.917,
+          "quantity": 24.0,
+          "quantity_confidence": 0.922,
+          "unitprice": 35000.0,
+          "unitprice_confidence": 0.922,
+          "amount": 840000.0,
+          "amount_confidence": 0.922
+        },
+        {
+          "description": "トナーカートリッジ",
+          "description_confidence": 0.911,
+          "quantity": 4.0,
+          "quantity_confidence": 0.922,
+          "unitprice": 8500.0,
+          "unitprice_confidence": 0.922,
+          "amount": 34000.0,
+          "amount_confidence": 0.922
+        },
+        {
+          "description": "ホワイトボード",
+          "description_confidence": 0.915,
+          "quantity": 22.0,
+          "quantity_confidence": 0.922,
+          "unitprice": 28000.0,
+          "unitprice_confidence": 0.922,
+          "amount": 616000.0,
+          "amount_confidence": 0.922
+        }
+      ]
+    }
+  ]
+}

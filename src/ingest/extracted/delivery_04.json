@@ -1,0 +1,42 @@
+{
+  "source_file": "delivery_04.pdf",
+  "full_text": "納品書\n中央オフィス機器株式会社 御中\n納No. D-2026-0004\n〒100-0005\n発行日 2026年5月20日\n東京都千代田区丸の内1-9-1\n仙台ビジネス株式会社\n₸ 980-0021\n宮城県仙台市青葉区中央1-4-4\nTEL: 073-400-6925\n下記のとおり納品いたします。\n注文番号:20260324-003\n納品日:2026年5月20日\nNo.\n品名\n数量\n単価\n金額\n摘要\n1\nトナーカートリッジ\n2\n8,500\n17,000\n2\nデスクライト\n22\n12,000\n264,000\n小計\n281,000\n消費税(10%)\n28,100\n合計\n309,100\n納品合計金額\n¥309,100-(税込)\n検 印\n受領印",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "中央オフィス機器株式会社 御中",
+      "vendor_address": "〒\n東京都千代田区丸の内1-9-1",
+      "customer_name": "台ビジネス株式",
+      "customer_address": "980-0021\n宮\n市青葉区中央",
+      "invoice_id": null,
+      "invoice_date": "2026-05-20",
+      "due_date": null,
+      "subtotal": 281000.0,
+      "total_tax": 28100.0,
+      "invoice_total": 309100.0,
+      "items": [
+        {
+          "description": "トナーカートリッジ",
+          "description_confidence": 0.918,
+          "quantity": 2.0,
+          "quantity_confidence": 0.937,
+          "unitprice": 8500.0,
+          "unitprice_confidence": 0.934,
+          "amount": 17000.0,
+          "amount_confidence": 0.934
+        },
+        {
+          "description": "デスクライト",
+          "description_confidence": 0.92,
+          "quantity": 22.0,
+          "quantity_confidence": 0.934,
+          "unitprice": 12000.0,
+          "unitprice_confidence": 0.934,
+          "amount": 264000.0,
+          "amount_confidence": 0.934
+        }
+      ]
+    }
+  ]
+}

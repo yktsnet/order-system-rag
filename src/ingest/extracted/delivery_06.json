@@ -1,0 +1,52 @@
+{
+  "source_file": "delivery_06.pdf",
+  "full_text": "納品書\n中央オフィス機器株式会社 御中\n納No. D-2026-0006\n〒100-0005\n発行日 2026年5月31日\n東京都千代田区丸の内1-9-1\n横浜トレーディング株式会社\n〒 220-0012\n神奈川県横浜市西区みなとみらい6-6\nTEL: 084-804-4598\n下記のとおり納品いたします。\n注文番号:20260422-003\n納品日:2026年5月31日\nNo.\n品名\n数量\n単価\n金額\n摘要\n1\n高性能オフィスチェア\n26\n85,000\n2,210,000\n2\nシュレッダー\n11\n35,000\n385,000\n3\nトナーカートリッジ\n13\n8,500\n110,500\n小計\n2,705,500\n消費税(10%)\n270,550\n合計\n2,976,050\n納品合計金額\n¥2,976,050-(税込)\n検 印\n受領印",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "横浜トレーディング株式会社",
+      "vendor_address": "神奈川県横浜市西区みなとみらい6-6",
+      "customer_name": null,
+      "customer_address": null,
+      "invoice_id": "D-2026-0006",
+      "invoice_date": "2026-05-31",
+      "due_date": null,
+      "subtotal": 2705500.0,
+      "total_tax": 270550.0,
+      "invoice_total": 2976050.0,
+      "items": [
+        {
+          "description": "高性能オフィスチェア",
+          "description_confidence": 0.916,
+          "quantity": 26.0,
+          "quantity_confidence": 0.931,
+          "unitprice": 85000.0,
+          "unitprice_confidence": 0.93,
+          "amount": 2210000.0,
+          "amount_confidence": 0.931
+        },
+        {
+          "description": "シュレッダー",
+          "description_confidence": 0.918,
+          "quantity": 11.0,
+          "quantity_confidence": 0.929,
+          "unitprice": 35000.0,
+          "unitprice_confidence": 0.929,
+          "amount": 385000.0,
+          "amount_confidence": 0.93
+        },
+        {
+          "description": "トナーカートリッジ",
+          "description_confidence": 0.913,
+          "quantity": 13.0,
+          "quantity_confidence": 0.928,
+          "unitprice": 8500.0,
+          "unitprice_confidence": 0.931,
+          "amount": 110500.0,
+          "amount_confidence": 0.931
+        }
+      ]
+    }
+  ]
+}

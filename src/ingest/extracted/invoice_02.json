@@ -1,0 +1,42 @@
+{
+  "source_file": "invoice_02.pdf",
+  "full_text": "請求書\n中央オフィス機器株式会社 御中\n請No. INV-2026-0002\n〒 100-0005\n発行日 2026年6月6日\n東京都千代田区丸の内1-9-1\n大阪物産株式会社\n〒530-0001\n大阪府大阪市北区梅田2-2-2\nTEL: 067-716-1434\n下記のとおりご請求いたします。\nNo.\n品名\n数量\n単価\n金額\n1\nトナーカートリッジ\n23\n8,500\n195,500\n2\nクリアファイル(10枚)\n18\n600\n10,800\n小計\n206,300\n消費税(10%)\n20,630\n合計\n226,930\n御請求金額\n¥226,930-(税込)\n(振込先)\n三菱UFJ銀行 京都支店\n預金種別:普通\nお支払期限:2026年7月6日\n口座番号:1234567\n口座名義:大阪物産株式会社\n備考: :unselected: :unselected:",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "大阪物産株式会社",
+      "vendor_address": "大阪府大阪市北区梅田2-2-2",
+      "customer_name": null,
+      "customer_address": null,
+      "invoice_id": "INV-2026-0002",
+      "invoice_date": "2026-06-06",
+      "due_date": "2026-07-06",
+      "subtotal": 206300.0,
+      "total_tax": 20630.0,
+      "invoice_total": 226930.0,
+      "items": [
+        {
+          "description": "トナーカートリッジ",
+          "description_confidence": 0.943,
+          "quantity": 23.0,
+          "quantity_confidence": 0.944,
+          "unitprice": 8500.0,
+          "unitprice_confidence": 0.944,
+          "amount": 195500.0,
+          "amount_confidence": 0.944
+        },
+        {
+          "description": "クリアファイル(10枚)",
+          "description_confidence": 0.956,
+          "quantity": 18.0,
+          "quantity_confidence": 0.944,
+          "unitprice": 600.0,
+          "unitprice_confidence": 0.944,
+          "amount": 10800.0,
+          "amount_confidence": 0.944
+        }
+      ]
+    }
+  ]
+}

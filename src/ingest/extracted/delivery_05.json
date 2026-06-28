@@ -1,0 +1,42 @@
+{
+  "source_file": "delivery_05.pdf",
+  "full_text": "納品書\n中央オフィス機器株式会社 御中\n納No. D-2026-0005\n〒 100-0005\n発行日 2026年5月2日\n東京都千代田区丸の内1-9-1\n名古屋産業株式会社\n₸ 450-0002\n愛知県名古屋市中村区名駅5-5-5\nTEL: 049-266-7065\n下記のとおり納品いたします。\n注文番号:20260422-002\n納品日:2026年5月2日\nNo.\n品名\n数量\n単価\n金額\n摘要\n1\nクリアファイル(10枚)\n23\n600\n13,800\n2\nスタンディングデスク\n30\n120,000\n3,600,000\n小計\n3,613,800\n消費税(10%)\n361,380\n合計\n3,975,180\n納品合計金額\n¥3,975,180-(税込)\n検 印\n受領印",
+  "documents": [
+    {
+      "doc_type": "invoice",
+      "confidence": 1.0,
+      "vendor_name": "中央オフィス機器株式会社 御中",
+      "vendor_address": "東京都千代田区丸の内1-9-1",
+      "customer_name": null,
+      "customer_address": null,
+      "invoice_id": "D-2026-0005",
+      "invoice_date": "2026-05-02",
+      "due_date": null,
+      "subtotal": 3613800.0,
+      "total_tax": 361380.0,
+      "invoice_total": 3975180.0,
+      "items": [
+        {
+          "description": "クリアファイル(10枚)",
+          "description_confidence": 0.937,
+          "quantity": 23.0,
+          "quantity_confidence": 0.943,
+          "unitprice": 600.0,
+          "unitprice_confidence": 0.943,
+          "amount": 13800.0,
+          "amount_confidence": 0.942
+        },
+        {
+          "description": "スタンディングデスク",
+          "description_confidence": 0.922,
+          "quantity": 30.0,
+          "quantity_confidence": 0.943,
+          "unitprice": 120000.0,
+          "unitprice_confidence": 0.943,
+          "amount": 3600000.0,
+          "amount_confidence": 0.943
+        }
+      ]
+    }
+  ]
+}
