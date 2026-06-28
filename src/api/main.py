@@ -56,6 +56,7 @@ class RagResponseModel(BaseModel):
     query_embedding_dim: int
     search_results: list[SearchResultItem]
     route: str
+    route_reason: str
 
 
 @app.post("/rag", response_model=RagResponseModel)
@@ -78,6 +79,7 @@ def rag_query(req: QueryRequest):
             for sr in result.search_results
         ],
         route=result.route,
+        route_reason=result.route_reason,
     )
 
 

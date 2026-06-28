@@ -4,6 +4,8 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal, TypedDict
+from pydantic import BaseModel, Field
+from google.genai import types
 
 from azure.core.credentials import AzureKeyCredential
 from azure.search.documents import SearchClient
@@ -26,15 +28,13 @@ RELEVANCE_THRESHOLD = 0.70
 
 ROUTE_PROMPT = """\
 あなたは質問の性質を判定する分類器です。
-以下の質問が、どのデータソースに適しているかを判定してください。
+ユーザーから入力された質問が、どのデータソースに適しているかを判定し、その理由を日本語で簡潔に説明してください。
 
-- sql: 構造化データの集計・ランキング・検索（売上合計、得意先一覧、受注件数など）
-- rag: 帳票の文面・支払条件・個別の記載内容（支払期限、備考、特記事項など）
-- both: 両方に関係する可能性がある
+- sql: 構造化データの集計・ランキング・検索（例: 売上合計、得意先一覧、受注件数、最高額の請求書など）
+- rag: 帳票の個別文面・支払条件・自由記述内容（例: 支払期限、備考、特記事項、届いた書類の有無など）
+- both: 上記の両方に関係する可能性がある、または判別が困難な場合
 
 質問: {query}
-
-"sql" "rag" "both" のいずれか1語のみ回答してください。
 """
 
 SYSTEM_PROMPT = """\
@@ -59,6 +59,11 @@ class SearchResult:
     score: float
 
 
+class RouteResult(BaseModel):
+    route: Literal["sql", "rag", "both"]
+    reason: str = Field(description="分類した理由を日本語で簡潔に説明する一文")
+
+
 @dataclass
 class RagResponse:
     answer: str
@@ -67,11 +72,13 @@ class RagResponse:
     generation_model: str = ""
     refused: bool = False
     route: str = "both"  # "sql" | "rag" | "both"
+    route_reason: str = ""
 
 
 class RagState(TypedDict):
     query: str
     route: Literal["sql", "rag", "both"]
+    route_reason: str
     query_vector: list[float]
     search_hits: list[SearchResult]
     relevant_hits: list[SearchResult]
@@ -149,10 +156,24 @@ def _generate(gemini: genai.Client, query: str, context: str) -> str:
 def route_query(state: RagState) -> RagState:
     gemini = _get_gemini()
     prompt = ROUTE_PROMPT.format(query=state["query"])
-    response = gemini.models.generate_content(model=GENERATION_MODEL, contents=prompt)
-    raw = response.text.strip().lower()
-    route: Literal["sql", "rag", "both"] = raw if raw in ("sql", "rag", "both") else "both"
-    return {**state, "route": route}
+    config = types.GenerateContentConfig(
+        response_mime_type="application/json",
+        response_schema=RouteResult,
+    )
+    import json
+    try:
+        response = gemini.models.generate_content(
+            model=GENERATION_MODEL,
+            contents=prompt,
+            config=config,
+        )
+        data = json.loads(response.text)
+        route: Literal["sql", "rag", "both"] = data.get("route", "both")
+        route_reason = data.get("reason", "判定理由を取得できませんでした。")
+    except Exception as e:
+        route = "both"
+        route_reason = f"ルーティング処理中にエラーが発生しました: {e}"
+    return {**state, "route": route, "route_reason": route_reason}
 
 
 def embed_query(state: RagState) -> RagState:
@@ -215,7 +236,7 @@ def build_graph():
 
 def ask(query: str) -> RagResponse:
     graph = build_graph()
-    result = graph.invoke({"query": query})
+    result = graph.invoke({"query": query, "route_reason": ""})
     return RagResponse(
         answer=result["answer"],
         search_results=result["search_hits"],
@@ -223,4 +244,5 @@ def ask(query: str) -> RagResponse:
         generation_model=GENERATION_MODEL,
         refused=result["refused"],
         route=result["route"],
+        route_reason=result.get("route_reason", ""),
     )

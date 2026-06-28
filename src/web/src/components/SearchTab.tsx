@@ -26,6 +26,7 @@ interface RagResponse {
   query_embedding_dim: number
   search_results: SearchResult[]
   route: 'sql' | 'rag' | 'both'
+  route_reason: string
 }
 
 interface SqlResponse {
@@ -162,6 +163,38 @@ function SqlStepLog({ response }: { response: SqlResponse }) {
             <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-primary" />
             <span>回答生成完了</span>
           </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function RouteRecommendation({ route, reason }: { route: string; reason?: string }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div className="flex flex-col items-center gap-2 animate-in fade-in duration-200">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary transition-all duration-200 shadow-sm active:scale-95"
+      >
+        <Sparkles className="h-3 w-3" />
+        <span>
+          {route === 'sql' && 'この質問は SQL 向き'}
+          {route === 'rag' && 'この質問は RAG 向き'}
+          {route === 'both' && 'この質問は両方に関係'}
+        </span>
+        {isOpen ? (
+          <ChevronUp className="h-3 w-3 opacity-70" />
+        ) : (
+          <ChevronDown className="h-3 w-3 opacity-70" />
+        )}
+      </button>
+
+      {isOpen && reason && (
+        <div className="max-w-md text-center bg-card border border-border/80 px-4 py-2.5 rounded-lg text-[11px] text-muted-foreground leading-relaxed shadow-sm animate-in fade-in slide-in-from-top-1 duration-200 whitespace-pre-wrap">
+          <span className="font-semibold text-foreground mr-1.5">判定理由:</span>
+          {reason}
         </div>
       )}
     </div>
@@ -363,12 +396,10 @@ export default function SearchTab() {
                 {/* ルーティングバッジ */}
                 {turn.ragResponse?.route && (
                   <div className="flex justify-center">
-                    <Badge variant="outline" className="text-xs gap-1.5 px-3 py-1">
-                      <Sparkles className="h-3 w-3" />
-                      {turn.ragResponse.route === 'sql' && 'この質問は SQL 向き'}
-                      {turn.ragResponse.route === 'rag' && 'この質問は RAG 向き'}
-                      {turn.ragResponse.route === 'both' && 'この質問は両方に関係'}
-                    </Badge>
+                    <RouteRecommendation
+                      route={turn.ragResponse.route}
+                      reason={turn.ragResponse.route_reason}
+                    />
                   </div>
                 )}
 
