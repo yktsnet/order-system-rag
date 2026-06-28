@@ -2,7 +2,7 @@
 id: 07
 branch-slug: langgraph-routing
 github_issue: 11
-status: open
+status: close
 type: feat
 対象: src/generate/rag.py, src/api/main.py, src/web/src/components/SearchTab.tsx
 内容: RAG パイプラインを LangGraph グラフに再構成し、質問の性質を判定するルーティングノードを追加。推奨バッジを UI に表示する
