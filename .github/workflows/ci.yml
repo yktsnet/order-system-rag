@@ -1,0 +1,39 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  syntax-backend:
+    name: Backend Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: py_compile
+        run: |
+          python -m py_compile \
+            src/api/main.py \
+            src/generate/rag.py \
+            src/ingest/extract.py \
+            src/search/index.py \
+            src/generate_samples.py
+  build-web:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: src/web/package-lock.json
+      - name: Install
+        run: npm ci
+        working-directory: src/web
+      - name: Build
+        run: npm run build
+        working-directory: src/web
