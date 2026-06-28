@@ -48,8 +48,8 @@ interface ChatTurn {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const RAG_API_BASE = 'http://localhost:8002'
-const SQL_API_BASE = 'http://localhost:5153'
+const RAG_API_BASE = import.meta.env.VITE_RAG_API_BASE ?? 'http://localhost:8002'
+const SQL_API_BASE = import.meta.env.VITE_SQL_API_BASE ?? 'http://localhost:5153'
 
 const SUGGEST_QUESTIONS = [
   { label: '支払期限を調べる', q: '東京商事の請求書の支払期限は？', icon: '📅' },
@@ -294,7 +294,7 @@ export default function SearchTab() {
       .catch((e: Error) => {
         const isConnectionError = !e.message.startsWith('HTTP')
         const errorMsg = isConnectionError
-          ? 'Text-to-SQL API に接続できません。SV6 トンネルを確認してください'
+          ? 'Text-to-SQL API に接続できません。SQL サービス（別リポ order-system-migration）が起動しているか確認してください'
           : `エラー: ${e.message}`
         setTurns((prev) =>
           prev.map((t) =>

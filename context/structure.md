@@ -22,7 +22,7 @@ order-system-rag/
 │           └── components/
 │               ├── DocumentsTab.tsx # 帳票一覧 + PDF プレビュー
 │               ├── SearchTab.tsx    # RAG / Text-to-SQL 2カラム比較 + ルーティングバッジ
-│               └── GuideTab.tsx     # 仕組み解説（フロー図 + 分岐パターン + 質問パターン表）
+│               └── GuideTab.tsx     # 使い分け解説（違いの対比 + 質問パターン比較 + まとめ）
 ├── .env                      # ローカル環境変数（gitignore）
 ├── .env.example              # キー一覧テンプレート
 └── CLAUDE.md

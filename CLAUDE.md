@@ -38,6 +38,12 @@ nix-shell -p 'python3.withPackages (ps: with ps; [
 
 ## 検証手段
 
+バックエンド（構文チェック）:
 ```
 nix-shell -p python3 --run "python3 -m py_compile src/api/main.py src/generate/rag.py src/ingest/extract.py src/search/index.py src/generate_samples.py"
+```
+
+フロントエンド（型チェック / ビルド）:
+```
+cd src/web && npm ci && npm run build
 ```
