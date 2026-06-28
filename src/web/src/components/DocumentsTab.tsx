@@ -43,12 +43,18 @@ interface ExtractedJson {
   documents: DocDetail[]
 }
 
-type FilterType = '全件' | '見積書' | '請求書' | '納品書'
+type DocType = '見積書' | '請求書' | '納品書'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const FILTERS: FilterType[] = ['全件', '見積書', '請求書', '納品書']
+const FILTERS: DocType[] = ['見積書', '請求書', '納品書']
 const API_BASE = 'http://localhost:8002'
+
+const typePriority: Record<string, number> = {
+  '見積書': 1,
+  '請求書': 2,
+  '納品書': 3,
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -61,9 +67,10 @@ function toJsonFilename(sourceFile: string): string {
   return sourceFile.replace(/\.pdf$/i, '.json')
 }
 
-function docTypeBadgeVariant(docType: string): 'default' | 'secondary' | 'outline' {
-  if (docType === '請求書') return 'default'
-  if (docType === '見積書') return 'secondary'
+function docTypeBadgeVariant(docType: string): 'quote' | 'invoice' | 'delivery' | 'outline' {
+  if (docType === '請求書') return 'invoice'
+  if (docType === '見積書') return 'quote'
+  if (docType === '納品書') return 'delivery'
   return 'outline'
 }
 
@@ -134,7 +141,7 @@ export default function DocumentsTab() {
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
 
-  const [activeFilter, setActiveFilter] = useState<FilterType>('全件')
+  const [activeFilter, setActiveFilter] = useState<DocType | null>(null)
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
   const [previewData, setPreviewData] = useState<ExtractedJson | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
@@ -204,7 +211,17 @@ export default function DocumentsTab() {
   }
 
   const filtered =
-    activeFilter === '全件' ? files : files.filter((f) => f.doc_type === activeFilter)
+    activeFilter === null
+      ? [...files].sort((a, b) => {
+          const pA = typePriority[a.doc_type] ?? 99
+          const pB = typePriority[b.doc_type] ?? 99
+          if (pA !== pB) return pA - pB
+          const dateA = a.invoice_date || ''
+          const dateB = b.invoice_date || ''
+          if (dateA !== dateB) return dateB.localeCompare(dateA)
+          return a.source_file.localeCompare(b.source_file)
+        })
+      : files.filter((f) => f.doc_type === activeFilter)
 
   const handleRowClick = (sourceFile: string) => {
     setSelectedFile((prev) => (prev === sourceFile ? null : sourceFile))
@@ -232,16 +249,28 @@ export default function DocumentsTab() {
 
       {/* Filter Buttons */}
       <div className="flex gap-2">
-        {FILTERS.map((filter) => (
-          <Button
-            key={filter}
-            variant={activeFilter === filter ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setActiveFilter(filter)}
-          >
-            {filter}
-          </Button>
-        ))}
+        {FILTERS.map((filter) => {
+          const isActive = activeFilter === filter
+          return (
+            <Button
+              key={filter}
+              variant="outline"
+              size="sm"
+              onClick={() => setActiveFilter((prev) => (prev === filter ? null : filter))}
+              className={
+                isActive
+                  ? filter === '請求書'
+                    ? 'border-blue-300/60 bg-blue-100/70 text-foreground hover:bg-blue-200/50'
+                    : filter === '見積書'
+                    ? 'border-amber-300/60 bg-amber-100/70 text-foreground hover:bg-amber-200/50'
+                    : 'border-emerald-300/60 bg-emerald-100/70 text-foreground hover:bg-emerald-200/50'
+                  : 'text-muted-foreground hover:text-foreground'
+              }
+            >
+              {filter}
+            </Button>
+          )
+        })}
       </div>
 
       {/* Table + Preview */}
@@ -262,7 +291,6 @@ export default function DocumentsTab() {
                   <TableHead className="px-4 py-3">帳票番号</TableHead>
                   <TableHead className="px-4 py-3 text-right">金額</TableHead>
                   <TableHead className="px-4 py-3">日付</TableHead>
-                  <TableHead className="w-12 px-4 py-3" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -272,7 +300,7 @@ export default function DocumentsTab() {
                     onClick={() => handleRowClick(file.source_file)}
                     className={[
                       'cursor-pointer',
-                      selectedFile === file.source_file ? 'bg-primary/5' : '',
+                      selectedFile === file.source_file ? 'bg-muted/30' : '',
                     ].join(' ')}
                   >
                     <TableCell className="px-4 py-3">
@@ -286,19 +314,6 @@ export default function DocumentsTab() {
                       {formatCurrency(file.invoice_total)}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-muted-foreground">{file.invoice_date ?? '—'}</TableCell>
-                    <TableCell className="px-4 py-3">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 w-7 p-0"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          window.open(`${API_BASE}/pdf/${file.source_file}`, '_blank')
-                        }}
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -310,7 +325,7 @@ export default function DocumentsTab() {
           <Card className="w-80 shrink-0">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium">JSON プレビュー</CardTitle>
+                <CardTitle className="text-sm font-medium">帳票データの詳細</CardTitle>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -326,9 +341,20 @@ export default function DocumentsTab() {
               {previewLoading ? (
                 <div className="text-center text-sm text-muted-foreground">読み込み中…</div>
               ) : previewData ? (
-                <PreviewContent data={previewData} />
+                <div className="space-y-4">
+                  <PreviewContent data={previewData} />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                    onClick={() => window.open(`${API_BASE}/pdf/${selectedFile}`, '_blank')}
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    元のPDFファイルを表示
+                  </Button>
+                </div>
               ) : (
-                <div className="text-center text-sm text-muted-foreground">プレビューを取得できません</div>
+                <div className="text-center text-sm text-muted-foreground">データを取得できません</div>
               )}
             </CardContent>
           </Card>
