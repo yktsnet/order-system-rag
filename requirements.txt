@@ -1,0 +1,6 @@
+google-genai
+azure-search-documents
+python-dotenv
+fastapi
+uvicorn[standard]
+langgraph
