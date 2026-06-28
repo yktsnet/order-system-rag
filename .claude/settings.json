@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git push origin main*)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(ssh *)",
+      "Bash(rsync *)",
+      "Bash(*extract.py*)",
+      "Bash(*index.py*)"
+    ],
+    "allow": [
+      "Bash(git *)",
+      "Bash(gh pr *)",
+      "Bash(python3 -m py_compile *)",
+      "Bash(nix-shell *)"
+    ]
+  },
+  "attribution": { "commit": "", "pr": "" }
+}
