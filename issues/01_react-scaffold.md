@@ -1,7 +1,7 @@
 ## React プロジェクト初期化
 id: 01
 branch-slug: react-scaffold
-github_issue:
+github_issue: 1
 status: open
 type: feat
 対象: src/web/ (新規), src/web/package.json (新規), src/web/vite.config.ts (新規), src/web/tailwind.config.ts (新規), src/web/tsconfig.json (新規), src/web/index.html (新規), src/web/src/main.tsx (新規), src/web/src/App.tsx (新規), src/web/src/index.css (新規)
