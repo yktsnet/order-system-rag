@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import DocumentsTab from './components/DocumentsTab'
 
 type Tab = '帳票管理' | 'データ検索' | '仕組み解説'
 
@@ -40,9 +41,13 @@ export default function App() {
 
       {/* Tab content */}
       <main className="mx-auto max-w-5xl px-4 py-8">
-        <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-400">
-          <p className="text-lg">{activeTab}</p>
-        </div>
+        {activeTab === '帳票管理' ? (
+          <DocumentsTab />
+        ) : (
+          <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-400">
+            <p className="text-lg">{activeTab}</p>
+          </div>
+        )}
       </main>
     </div>
   )
