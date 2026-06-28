@@ -1,7 +1,7 @@
 ## 仕組み解説タブ
 id: 08
 branch-slug: guide-tab
-github_issue:
+github_issue: 13
 status: open
 type: feat
 対象: src/web/src/components/GuideTab.tsx (新規), src/web/src/App.tsx
