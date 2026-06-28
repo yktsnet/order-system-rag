@@ -2,7 +2,7 @@
 id: 10
 branch-slug: deploy
 github_issue: 15
-status: open
+status: close
 type: feat
 対象: Dockerfile (新規), docker-compose.yml (新規), infrastructure/deploy.sh (新規), src/api/main.py
 内容: Docker コンテナ化 + SV6 へのデプロイ。FastAPI StaticFiles で Vite ビルド成果物を配信する1コンテナ構成
