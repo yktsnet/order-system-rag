@@ -9,7 +9,7 @@ order-system-rag/
 │   ├── samples/              # 生成済みサンプル PDF（見積書・請求書・納品書 各 10 枚）
 │   ├── ingest/
 │   │   ├── extract.py        # Azure Document Intelligence で PDF → JSON 変換
-│   │   └── extracted/        # 抽出済み JSON（gitignore 対象・中間成果物）
+│   │   └── extracted/        # 抽出済み JSON（PDF から構造化抽出した成果物）
 │   ├── search/
 │   │   └── index.py          # Gemini embedding + Azure AI Search インデックス登録
 │   ├── generate/
@@ -26,7 +26,7 @@ order-system-rag/
 ```
 src/samples/*.pdf
     ↓ ingest/extract.py  (Azure Document Intelligence prebuilt-invoice)
-src/ingest/extracted/*.json  ← gitignore 対象
+src/ingest/extracted/*.json
     ↓ search/index.py  (Gemini gemini-embedding-001 → Azure AI Search HNSW)
 Azure AI Search: order-system-rag-index（ベクトル次元 3072）
     ↓ generate/rag.py  (ベクトル検索 スコア閾値 0.70 → Gemini gemini-3.1-flash-lite)
