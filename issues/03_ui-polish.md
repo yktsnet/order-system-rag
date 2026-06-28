@@ -1,7 +1,7 @@
 ## UI 改善: PDF プレビュー + shadcn/ui 導入
 id: 03
 branch-slug: ui-polish
-github_issue:
+github_issue: 5
 status: open
 type: feat
 対象: src/api/main.py, src/web/package.json, src/web/tsconfig.json, src/web/tailwind.config.ts, src/web/src/index.css, src/web/src/App.tsx, src/web/src/components/DocumentsTab.tsx, src/web/components.json (新規), src/web/src/lib/utils.ts (新規), src/web/src/components/ui/ (新規)
