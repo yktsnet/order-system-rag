@@ -2,7 +2,7 @@ import { useState, KeyboardEvent, useEffect, useRef } from 'react'
 import {
   Search, Send, ChevronDown, ChevronUp, FileText, Database,
   Loader2, Sparkles, BookOpen, AlertCircle, CheckCircle2,
-  Bot, User, HelpCircle, RotateCcw
+  Bot, User, HelpCircle, RotateCcw, Code2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -27,6 +27,12 @@ interface RagResponse {
   search_results: SearchResult[]
 }
 
+interface SqlResponse {
+  answer: string
+  sql: string | null
+  data: Record<string, unknown>[]
+}
+
 interface ChatTurn {
   id: string
   question: string
@@ -35,12 +41,13 @@ interface ChatTurn {
   ragResponse: RagResponse | null
   sqlLoading: boolean
   sqlError: string | null
-  sqlResponse: string | null
+  sqlResponse: SqlResponse | null
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const API_BASE = 'http://localhost:8002'
+const RAG_API_BASE = 'http://localhost:8002'
+const SQL_API_BASE = 'http://localhost:5153'
 
 const SUGGEST_QUESTIONS = [
   { label: '支払期限を調べる', q: '東京商事の請求書の支払期限は？', icon: '📅' },
@@ -109,6 +116,53 @@ function StepLog({ response }: { response: RagResponse }) {
   )
 }
 
+function SqlStepLog({ response }: { response: SqlResponse }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const { sql, data } = response
+
+  return (
+    <div className="space-y-2 mt-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-6 gap-1 px-1.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-muted/50 -ml-1.5"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? (
+          <ChevronUp className="h-3 w-3" />
+        ) : (
+          <ChevronDown className="h-3 w-3" />
+        )}
+        {isOpen ? 'ステップログを閉じる' : 'ステップログを表示'}
+      </Button>
+
+      {isOpen && (
+        <div className="space-y-2 rounded-md bg-muted/30 p-3 font-mono text-[11px] leading-relaxed border border-muted/30 animate-in fade-in duration-200">
+          {sql != null && (
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Code2 className="h-3.5 w-3.5 shrink-0 text-primary/70" />
+                <span>SQL 生成</span>
+              </div>
+              <pre className="ml-5 rounded bg-muted/50 px-2 py-1.5 text-[10px] overflow-x-auto whitespace-pre-wrap break-all">{sql}</pre>
+            </div>
+          )}
+          {data.length > 0 && (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Database className="h-3.5 w-3.5 shrink-0 text-primary/70" />
+              <span>実行 → {data.length}行の結果</span>
+            </div>
+          )}
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-primary" />
+            <span>回答生成完了</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Main component ──────────────────────────────────────────────────────────
 
 export default function SearchTab() {
@@ -143,8 +197,15 @@ export default function SearchTab() {
 
     setTurns((prev) => [...prev, newTurn])
 
-    // RAG APIを呼び出す
-    fetch(`${API_BASE}/rag`, {
+    // RAG と SQL の両方が完了したら isSubmitting を解除する
+    let pending = 2
+    const checkDone = () => {
+      pending -= 1
+      if (pending === 0) setIsSubmitting(false)
+    }
+
+    // RAG API を呼び出す
+    fetch(`${RAG_API_BASE}/rag`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question: q }),
@@ -171,22 +232,41 @@ export default function SearchTab() {
           )
         )
       })
+      .finally(checkDone)
 
-    // Text-to-SQL API（将来の連携に備えて、1.2秒のモックローディング）
-    setTimeout(() => {
-      setTurns((prev) =>
-        prev.map((t) =>
-          t.id === turnId
-            ? {
-                ...t,
-                sqlLoading: false,
-                sqlResponse: 'order-system-migration の Agent API と連携予定',
-              }
-            : t
+    // Text-to-SQL API を呼び出す
+    fetch(`${SQL_API_BASE}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: q }),
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json() as Promise<SqlResponse>
+      })
+      .then((data) => {
+        setTurns((prev) =>
+          prev.map((t) =>
+            t.id === turnId
+              ? { ...t, sqlLoading: false, sqlResponse: data }
+              : t
+          )
         )
-      )
-      setIsSubmitting(false)
-    }, 1200)
+      })
+      .catch((e: Error) => {
+        const isConnectionError = !e.message.startsWith('HTTP')
+        const errorMsg = isConnectionError
+          ? 'Text-to-SQL API に接続できません。SV6 トンネルを確認してください'
+          : `エラー: ${e.message}`
+        setTurns((prev) =>
+          prev.map((t) =>
+            t.id === turnId
+              ? { ...t, sqlLoading: false, sqlError: errorMsg }
+              : t
+          )
+        )
+      })
+      .finally(checkDone)
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -324,31 +404,42 @@ export default function SearchTab() {
                   </Card>
 
                   {/* SQL回答 */}
-                  <Card className="shadow-sm border-muted-foreground/15 border-dashed bg-muted/5">
-                    <CardHeader className="pb-2 bg-muted/10 border-b border-muted-foreground/10">
+                  <Card className="shadow-sm border-muted-foreground/15">
+                    <CardHeader className="pb-2 bg-muted/20 border-b border-muted-foreground/10">
                       <CardTitle className="flex items-center justify-between text-xs font-semibold text-foreground">
-                        <span className="flex items-center gap-1.5 text-muted-foreground">
-                          <Database className="h-3.5 w-3.5" />
+                        <span className="flex items-center gap-1.5">
+                          <Database className="h-3.5 w-3.5 text-primary" />
                           Text-to-SQL
                         </span>
-                        <Badge variant="outline" className="text-[10px] border-muted-foreground/20 bg-background text-muted-foreground">
-                          準備中
+                        <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary hover:bg-primary/10 border border-primary/20">
+                          LangGraph
                         </Badge>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="pt-4 min-h-[100px] flex items-center justify-center">
-                      {turn.sqlLoading ? (
-                        <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground animate-pulse">
-                          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                          <span>SQLを生成・実行中…</span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center text-center p-4 text-xs text-muted-foreground space-y-1.5">
-                          <Database className="h-5 w-5 opacity-60 text-muted-foreground" />
-                          <span className="font-semibold text-foreground/80 whitespace-pre-wrap">{turn.sqlResponse}</span>
-                          <span className="text-[10px] text-muted-foreground/75">
-                            (order-system-migration APIとの連携を予定しています)
-                          </span>
+                    <CardContent className="pt-4 space-y-3 min-h-[100px] flex flex-col justify-between">
+                      <div>
+                        {turn.sqlLoading && (
+                          <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground animate-pulse">
+                            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                            <span>SQLを生成・実行中…</span>
+                          </div>
+                        )}
+                        {turn.sqlError && (
+                          <div className="flex items-center gap-2 text-sm text-destructive py-2">
+                            <AlertCircle className="h-4 w-4 shrink-0" />
+                            <span>{turn.sqlError}</span>
+                          </div>
+                        )}
+                        {turn.sqlResponse && (
+                          <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
+                            {turn.sqlResponse.answer}
+                          </p>
+                        )}
+                      </div>
+
+                      {turn.sqlResponse && (
+                        <div className="pt-2 border-t border-muted/30">
+                          <SqlStepLog response={turn.sqlResponse} />
                         </div>
                       )}
                     </CardContent>
