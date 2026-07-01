@@ -2,7 +2,7 @@
 id: 18
 branch-slug: refusal-reason-enrichment
 github_issue: 31
-status: open
+status: close
 type: fix
 対象: src/generate/rag.py
 内容: `refuse`・`format_sql_answer`に渡す理由生成プロンプトが薄い材料しか受け取っていない。stateに既にある`route_reason`を渡し、`generate_sql`の失敗理由を新しく構造化出力させて配線する
