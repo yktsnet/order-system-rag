@@ -2,7 +2,7 @@
 id: 19
 branch-slug: deploy-workflow
 github_issue: 33
-status: open
+status: close
 type: feat
 対象: .github/workflows/deploy.yml (新規)
 内容: 現状 `infrastructure/deploy.sh` は手動実行前提で、main への push が本番（SV6）に自動反映されない。attendance-system-migration / order-system-migration と同じ Tailscale + SSH + `docker compose up -d --build` パターンで push 時に自動デプロイされるようにする。
