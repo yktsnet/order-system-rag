@@ -126,7 +126,8 @@ FALLBACK_REFUSAL_TEXT = "該当する情報が見つかりませんでした。"
 REFUSE_PROMPT = """\
 あなたは発注業務の帳票検索アシスタントです。
 ユーザーの質問に対して帳票データを検索しましたが、関連度が十分な文書が見つかりませんでした。
-以下の検索条件だけを手がかりに、質問者に「何を探して見つからなかったか」を1〜2文で簡潔に説明してください。
+以下の検索条件とルーティング判定だけを手がかりに、質問者に「何を探して見つからなかったか」を1〜2文で簡潔に説明してください。
+この質問は当初どう判定されたかも踏まえて説明してください。
 文書の中身は与えられていません。内容を推測して回答してはいけません。断定的な回答も禁止です。
 
 ## 質問
@@ -135,12 +136,14 @@ REFUSE_PROMPT = """\
 ## 検索条件
 - 絞り込み条件: {filters}
 - 最も近かった候補のスコア: {best_score}（関連度しきい値 {threshold} 未満のため不採用）
+- この質問のルーティング判定理由: {route_reason}
 """
 
 SQL_REFUSE_PROMPT = """\
 あなたは発注業務の帳票検索アシスタントです。
 ユーザーの質問に対してSQLでデータ検索を試みましたが、回答できませんでした。
-以下の理由だけを根拠に、質問者になぜ回答できなかったかを1〜2文で簡潔に説明してください。
+以下の理由とルーティング判定だけを根拠に、質問者になぜ回答できなかったかを1〜2文で簡潔に説明してください。
+この質問は当初どう判定されたかも踏まえて説明してください。
 存在しないデータを補って回答してはいけません。断定的な回答も禁止です。
 
 ## 質問
@@ -148,6 +151,9 @@ SQL_REFUSE_PROMPT = """\
 
 ## 回答できなかった理由
 {sql_error}
+
+## この質問のルーティング判定理由
+{route_reason}
 """
 
 
@@ -174,6 +180,7 @@ class FilterExtractResult(BaseModel):
 
 class SqlGenerateResult(BaseModel):
     sql_query: str | None = Field(default=None, description="質問に答えるSELECT文。生成できなければnull")
+    reason: str | None = Field(default=None, description="sql_queryがnullの場合、スキーマ上表現できない理由を日本語で簡潔に説明する")
 
 
 @dataclass
@@ -204,6 +211,7 @@ class RagState(TypedDict):
     sql_query: str | None
     sql_rows: list[dict]
     sql_error: str | None
+    sql_generation_reason: str | None
 
 
 # ─── クライアント初期化ヘルパー ──────────────────────────────────────────────────
@@ -404,6 +412,7 @@ def refuse(state: RagState) -> RagState:
         filters=_format_filters_for_prompt(state.get("filters")),
         best_score=f"{best_score:.4f}" if best_score is not None else "該当なし",
         threshold=RELEVANCE_THRESHOLD,
+        route_reason=state.get("route_reason", ""),
     )
     answer = _generate_refusal_reason(prompt)
     return {**state, "answer": answer, "refused": True}
@@ -429,6 +438,7 @@ def generate_sql(state: RagState) -> RagState:
         response_schema=SqlGenerateResult,
     )
     sql_query: str | None = None
+    sql_generation_reason: str | None = None
     try:
         response = gemini.models.generate_content(
             model=GENERATION_MODEL,
@@ -439,15 +449,18 @@ def generate_sql(state: RagState) -> RagState:
         candidate = data.get("sql_query")
         if candidate and _is_safe_select(candidate):
             sql_query = candidate
+        else:
+            sql_generation_reason = data.get("reason")
     except Exception:
         sql_query = None
-    return {**state, "sql_query": sql_query}
+    return {**state, "sql_query": sql_query, "sql_generation_reason": sql_generation_reason}
 
 
 def execute_sql(state: RagState) -> RagState:
     sql_query = state.get("sql_query")
     if not sql_query:
-        return {**state, "sql_rows": [], "sql_error": "SQLを生成できませんでした。"}
+        fallback_reason = state.get("sql_generation_reason") or "SQLを生成できませんでした。"
+        return {**state, "sql_rows": [], "sql_error": fallback_reason}
     try:
         conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
         conn.row_factory = sqlite3.Row
@@ -465,7 +478,11 @@ def execute_sql(state: RagState) -> RagState:
 
 def format_sql_answer(state: RagState) -> RagState:
     if state.get("sql_error"):
-        prompt = SQL_REFUSE_PROMPT.format(query=state["query"], sql_error=state["sql_error"])
+        prompt = SQL_REFUSE_PROMPT.format(
+            query=state["query"],
+            sql_error=state["sql_error"],
+            route_reason=state.get("route_reason", ""),
+        )
         answer = _generate_refusal_reason(prompt)
         return {**state, "answer": answer, "refused": True}
     gemini = _get_gemini()
