@@ -2,7 +2,7 @@
 id: 22
 branch-slug: api-integration-tests
 github_issue: 39
-status: open
+status: close
 type: feat
 対象: requirements.txt, tests/test_api.py (新規)
 内容: FastAPIのTestClientを用い、rag.askをモックしてAPIエンドポイントの結合テストを追加する
