@@ -2,7 +2,7 @@
 id: 11
 branch-slug: doc-type-fix
 github_issue: 17
-status: open
+status: close
 type: fix
 対象: src/ingest/extract.py, src/ingest/extracted/*.json（再生成）
 内容: Azure Document Intelligenceの`prebuilt-invoice`が返す固定ラベルではなく、ファイル名prefix（delivery/invoice/quotation）から実際の帳票種別を`doc_type`に持たせる
