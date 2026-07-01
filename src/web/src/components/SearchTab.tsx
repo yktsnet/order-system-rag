@@ -25,14 +25,10 @@ interface RagResponse {
   generation_model: string
   query_embedding_dim: number
   search_results: SearchResult[]
-  route: 'sql' | 'rag' | 'both'
+  route: 'sql' | 'rag'
   route_reason: string
-}
-
-interface SqlResponse {
-  answer: string
-  sql: string | null
-  data: Record<string, unknown>[]
+  sql_query: string | null
+  sql_rows: Record<string, unknown>[]
 }
 
 interface ChatTurn {
@@ -43,13 +39,12 @@ interface ChatTurn {
   ragResponse: RagResponse | null
   sqlLoading: boolean
   sqlError: string | null
-  sqlResponse: SqlResponse | null
+  sqlResponse: RagResponse | null
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const RAG_API_BASE = import.meta.env.VITE_RAG_API_BASE ?? ''
-const SQL_API_BASE = import.meta.env.VITE_SQL_API_BASE ?? 'http://localhost:5153'
 
 const SUGGEST_QUESTIONS = [
   { label: '支払期限を調べる', q: '東京商事の請求書の支払期限は？', icon: '📅' },
@@ -83,7 +78,7 @@ function StepLog({ response }: { response: RagResponse }) {
         <div className="space-y-2 rounded-md bg-muted/30 p-3 font-mono text-[11px] leading-relaxed border border-muted/30 animate-in fade-in duration-200">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary/70" />
-            <span>ルーティング → {route === 'sql' ? 'SQL 向き' : route === 'rag' ? 'RAG 向き' : '両方'}</span>
+            <span>ルーティング → {route === 'sql' ? 'SQL 向き' : 'RAG 向き'}</span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary/70" />
@@ -122,9 +117,9 @@ function StepLog({ response }: { response: RagResponse }) {
   )
 }
 
-function SqlStepLog({ response }: { response: SqlResponse }) {
+function SqlStepLog({ response }: { response: RagResponse }) {
   const [isOpen, setIsOpen] = useState(false)
-  const { sql, data } = response
+  const { sql_query, sql_rows } = response
 
   return (
     <div className="space-y-2 mt-1">
@@ -144,19 +139,19 @@ function SqlStepLog({ response }: { response: SqlResponse }) {
 
       {isOpen && (
         <div className="space-y-2 rounded-md bg-muted/30 p-3 font-mono text-[11px] leading-relaxed border border-muted/30 animate-in fade-in duration-200">
-          {sql != null && (
+          {sql_query != null && (
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Code2 className="h-3.5 w-3.5 shrink-0 text-primary/70" />
                 <span>SQL 生成</span>
               </div>
-              <pre className="ml-5 rounded bg-muted/50 px-2 py-1.5 text-[10px] overflow-x-auto whitespace-pre-wrap break-all">{sql}</pre>
+              <pre className="ml-5 rounded bg-muted/50 px-2 py-1.5 text-[10px] overflow-x-auto whitespace-pre-wrap break-all">{sql_query}</pre>
             </div>
           )}
-          {data.length > 0 && (
+          {sql_rows.length > 0 && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Database className="h-3.5 w-3.5 shrink-0 text-primary/70" />
-              <span>実行 → {data.length}行の結果</span>
+              <span>実行 → {sql_rows.length}行の結果</span>
             </div>
           )}
           <div className="flex items-center gap-2 text-muted-foreground">
@@ -182,7 +177,6 @@ function RouteRecommendation({ route, reason }: { route: string; reason?: string
         <span>
           {route === 'sql' && 'この質問は SQL 向き'}
           {route === 'rag' && 'この質問は RAG 向き'}
-          {route === 'both' && 'この質問は両方に関係'}
         </span>
         {isOpen ? (
           <ChevronUp className="h-3 w-3 opacity-70" />
@@ -242,11 +236,11 @@ export default function SearchTab() {
       if (pending === 0) setIsSubmitting(false)
     }
 
-    // RAG API を呼び出す
+    // RAG 経路を強制した /rag 呼び出し（ルーティングバッジもここから取得する）
     fetch(`${RAG_API_BASE}/rag`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: q }),
+      body: JSON.stringify({ question: q, force_route: 'rag' }),
     })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
@@ -272,15 +266,15 @@ export default function SearchTab() {
       })
       .finally(checkDone)
 
-    // Text-to-SQL API を呼び出す
-    fetch(`${SQL_API_BASE}/chat`, {
+    // SQL 経路を強制した /rag 呼び出し
+    fetch(`${RAG_API_BASE}/rag`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: q }),
+      body: JSON.stringify({ question: q, force_route: 'sql' }),
     })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
-        return r.json() as Promise<SqlResponse>
+        return r.json() as Promise<RagResponse>
       })
       .then((data) => {
         setTurns((prev) =>
@@ -292,14 +286,10 @@ export default function SearchTab() {
         )
       })
       .catch((e: Error) => {
-        const isConnectionError = !e.message.startsWith('HTTP')
-        const errorMsg = isConnectionError
-          ? 'Text-to-SQL API に接続できません。SQL サービス（別リポ order-system-migration）が起動しているか確認してください'
-          : `エラー: ${e.message}`
         setTurns((prev) =>
           prev.map((t) =>
             t.id === turnId
-              ? { ...t, sqlLoading: false, sqlError: errorMsg }
+              ? { ...t, sqlLoading: false, sqlError: `エラー: ${e.message}` }
               : t
           )
         )

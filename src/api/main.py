@@ -9,6 +9,7 @@
 import json
 import os
 from pathlib import Path
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,6 +44,7 @@ app.add_middleware(
 
 class QueryRequest(BaseModel):
     question: str
+    force_route: Literal["sql", "rag"] | None = None
 
 
 class SearchResultItem(BaseModel):
@@ -68,7 +70,7 @@ class RagResponseModel(BaseModel):
 
 @app.post("/rag", response_model=RagResponseModel)
 def rag_query(req: QueryRequest):
-    result = ask(req.question)
+    result = ask(req.question, force_route=req.force_route)
     return RagResponseModel(
         answer=result.answer,
         refused=result.refused,

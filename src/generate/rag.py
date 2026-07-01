@@ -161,6 +161,7 @@ class RagResponse:
 
 class RagState(TypedDict):
     query: str
+    force_route: Literal["sql", "rag"] | None
     route: Literal["sql", "rag"]
     route_reason: str
     filters: dict[str, str]
@@ -285,7 +286,8 @@ def route_query(state: RagState) -> RagState:
 
 
 def _route_after_route_query(state: RagState) -> str:
-    return "generate_sql" if state["route"] == "sql" else "extract_filters"
+    route = state.get("force_route") or state["route"]
+    return "generate_sql" if route == "sql" else "extract_filters"
 
 
 def extract_filters(state: RagState) -> RagState:
@@ -450,9 +452,9 @@ def build_graph():
     return graph.compile()
 
 
-def ask(query: str) -> RagResponse:
+def ask(query: str, force_route: Literal["sql", "rag"] | None = None) -> RagResponse:
     graph = build_graph()
-    result = graph.invoke({"query": query, "route_reason": ""})
+    result = graph.invoke({"query": query, "force_route": force_route, "route_reason": ""})
     query_vector = result.get("query_vector", [])
     return RagResponse(
         answer=result["answer"],
