@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { FileText } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import DocumentsTab from './components/DocumentsTab'
 import SearchTab from './components/SearchTab'
@@ -13,7 +14,10 @@ export default function App() {
     <div className="min-h-screen bg-background">
       <header className="bg-primary text-primary-foreground shadow-md">
         <div className="mx-auto max-w-6xl px-4 py-4">
-          <h1 className="text-xl font-bold tracking-wide">帳票管理システム</h1>
+          <h1 className="flex items-center gap-2 text-xl font-bold tracking-wide">
+            <FileText className="size-5" />
+            帳票管理システム
+          </h1>
         </div>
       </header>
 
