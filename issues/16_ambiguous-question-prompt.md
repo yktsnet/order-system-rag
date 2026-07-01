@@ -1,7 +1,7 @@
 ## RAG生成プロンプトに複数候補を区別できない場合の一文を追加
 id: 16
 branch-slug: ambiguous-question-prompt
-github_issue:
+github_issue: 27
 status: open
 type: feat
 対象: src/generate/rag.py
