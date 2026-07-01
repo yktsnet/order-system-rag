@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/yktsnet/order-system-rag/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/yktsnet/order-system-rag/actions/workflows/ci.yml)
 
-発注ドメインの取引先帳票 PDF（見積書・請求書・納品書）を題材に、同じ質問に対して RAG と Text-to-SQL がどう異なる答え方をするかを並べて比較し、「質問の性質でツールを選ぶ設計判断」を実証するポートフォリオ Demo。
+発注ドメインの取引先帳票 PDF（見積書・請求書・納品書）を題材に、同じ質問に対して RAG と Text-to-SQL がどう異なる答え方をするかを並べて比較し、「質問の性質でツールを選ぶ設計判断」を実証する。
 
 ## Quick Start
 
