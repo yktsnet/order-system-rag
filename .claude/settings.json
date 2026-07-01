@@ -13,8 +13,7 @@
       "Bash(git *)",
       "Bash(gh pr *)",
       "Bash(python3 -m py_compile *)",
-      "Bash(nix-shell *)",
-      "Write(.git/pr_body.md)"
+      "Bash(nix-shell *)"
     ]
   },
   "attribution": { "commit": "", "pr": "" }
