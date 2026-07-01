@@ -2,7 +2,7 @@
 id: 17
 branch-slug: refuse-llm-reasoning
 github_issue: 29
-status: open
+status: close
 type: feat
 対象: src/generate/rag.py, src/api/main.py
 内容: RAG経路の`refuse`とSQL経路の`format_sql_answer`の無回答応答を、固定文言「該当する情報が見つかりませんでした。」からLLMに理由を推論させた文章に変更する
