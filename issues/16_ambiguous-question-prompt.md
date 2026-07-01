@@ -2,7 +2,7 @@
 id: 16
 branch-slug: ambiguous-question-prompt
 github_issue: 27
-status: open
+status: close
 type: feat
 対象: src/generate/rag.py
 内容: `SYSTEM_PROMPT`に、上位ヒットのスコアが僅差で複数文書が候補になる場合は区別できない旨を答えるルールを追加する
