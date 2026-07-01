@@ -1,7 +1,7 @@
 ## 無回答理由生成に渡す材料を強化（route_reason・SQL生成失敗理由の配線）
 id: 18
 branch-slug: refusal-reason-enrichment
-github_issue:
+github_issue: 31
 status: open
 type: fix
 対象: src/generate/rag.py
