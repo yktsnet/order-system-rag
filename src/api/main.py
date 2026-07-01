@@ -62,6 +62,8 @@ class RagResponseModel(BaseModel):
     search_results: list[SearchResultItem]
     route: str
     route_reason: str
+    sql_query: str | None
+    sql_rows: list[dict]
 
 
 @app.post("/rag", response_model=RagResponseModel)
@@ -85,6 +87,8 @@ def rag_query(req: QueryRequest):
         ],
         route=result.route,
         route_reason=result.route_reason,
+        sql_query=result.sql_query,
+        sql_rows=result.sql_rows,
     )
 
 
