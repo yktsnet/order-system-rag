@@ -2,7 +2,7 @@
 id: 21
 branch-slug: pytest-unit-tests
 github_issue: 37
-status: open
+status: close
 type: feat
 対象: requirements.txt, tests/ (新規), tests/test_rag_logic.py (新規), tests/test_extract.py (新規), .github/workflows/ci.yml
 内容: pytestを導入し、外部API（Azure/Gemini）に依存しない純粋ロジック関数のユニットテストを追加する。CIにunit-testsジョブを追加する
