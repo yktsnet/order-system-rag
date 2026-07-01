@@ -2,7 +2,7 @@
 id: 15
 branch-slug: search-tab-unify
 github_issue: 25
-status: open
+status: close
 type: feat
 対象: src/generate/rag.py, src/api/main.py, src/web/src/components/SearchTab.tsx
 内容: `/rag`に`force_route`パラメータを追加し、フロントの2カラム比較（RAG/Text-to-SQL）を、`order-system-migration`へのクロスオリジン呼び出しではなく本リポ内蔵のSQL経路（Issue14）から取得するように切り替える
