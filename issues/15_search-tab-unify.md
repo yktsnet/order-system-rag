@@ -1,7 +1,7 @@
 ## SearchTabの2カラム比較を内蔵SQL経路に切替
 id: 15
 branch-slug: search-tab-unify
-github_issue:
+github_issue: 25
 status: open
 type: feat
 対象: src/generate/rag.py, src/api/main.py, src/web/src/components/SearchTab.tsx
