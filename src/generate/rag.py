@@ -1,7 +1,9 @@
 """RAG パイプライン: LangGraph StateGraph で実装。ルーティング → 検索 → 生成（根拠付き回答 + 無回答ポリシー + 出典提示）。"""
 
+import json
 import os
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 from typing import Literal, TypedDict
 from pydantic import BaseModel, Field
@@ -37,6 +39,16 @@ ROUTE_PROMPT = """\
 質問: {query}
 """
 
+FILTER_PROMPT = """\
+あなたは質問文から検索絞り込み条件を抽出するアシスタントです。
+質問文に日付や取引先名が含まれていれば抽出してください。含まれない場合は null にしてください。推測で埋めないでください。
+
+- invoice_date: 帳票の日付（納品日・請求日等）が具体的に含まれる場合、YYYY-MM-DD形式に正規化する。年が省略されている場合は{current_year}年として補完する。
+- party_name: 取引先名（会社名等）が含まれる場合、その名称をそのまま抽出する。
+
+質問: {query}
+"""
+
 SYSTEM_PROMPT = """\
 あなたは発注業務の帳票検索アシスタントです。
 ユーザーの質問に対して、提供された帳票データ（見積書・請求書・納品書）の情報のみを根拠に回答してください。
@@ -64,6 +76,11 @@ class RouteResult(BaseModel):
     reason: str = Field(description="分類した理由を日本語で簡潔に説明する一文")
 
 
+class FilterExtractResult(BaseModel):
+    invoice_date: str | None = Field(default=None, description="YYYY-MM-DD形式の帳票日付。抽出できなければnull")
+    party_name: str | None = Field(default=None, description="取引先名（部分一致）。抽出できなければnull")
+
+
 @dataclass
 class RagResponse:
     answer: str
@@ -79,6 +96,7 @@ class RagState(TypedDict):
     query: str
     route: Literal["sql", "rag", "both"]
     route_reason: str
+    filters: dict[str, str]
     query_vector: list[float]
     search_hits: list[SearchResult]
     relevant_hits: list[SearchResult]
@@ -108,7 +126,27 @@ def _embed(gemini: genai.Client, text: str) -> list[float]:
     return result.embeddings[0].values
 
 
-def _search(search_client: SearchClient, query_vector: list[float], top_k: int = 5) -> list[SearchResult]:
+def _build_filter(filters: dict[str, str] | None) -> str | None:
+    if not filters:
+        return None
+    clauses = []
+    invoice_date = filters.get("invoice_date")
+    if invoice_date:
+        escaped = invoice_date.replace("'", "''")
+        clauses.append(f"invoice_date eq '{escaped}'")
+    party_name = filters.get("party_name")
+    if party_name:
+        escaped = party_name.replace("'", "''")
+        clauses.append(f"search.ismatch('{escaped}', 'vendor_name,customer_name')")
+    return " and ".join(clauses) if clauses else None
+
+
+def _search(
+    search_client: SearchClient,
+    query_vector: list[float],
+    filters: dict[str, str] | None = None,
+    top_k: int = 5,
+) -> list[SearchResult]:
     results = search_client.search(
         search_text=None,
         vector_queries=[VectorizedQuery(
@@ -116,6 +154,7 @@ def _search(search_client: SearchClient, query_vector: list[float], top_k: int =
             k_nearest_neighbors=top_k,
             fields="embedding",
         )],
+        filter=_build_filter(filters),
         select=["source_file", "doc_type", "vendor_name", "invoice_id",
                 "invoice_total", "full_text"],
     )
@@ -160,7 +199,6 @@ def route_query(state: RagState) -> RagState:
         response_mime_type="application/json",
         response_schema=RouteResult,
     )
-    import json
     try:
         response = gemini.models.generate_content(
             model=GENERATION_MODEL,
@@ -176,6 +214,32 @@ def route_query(state: RagState) -> RagState:
     return {**state, "route": route, "route_reason": route_reason}
 
 
+def extract_filters(state: RagState) -> RagState:
+    gemini = _get_gemini()
+    prompt = FILTER_PROMPT.format(query=state["query"], current_year=date.today().year)
+    config = types.GenerateContentConfig(
+        response_mime_type="application/json",
+        response_schema=FilterExtractResult,
+    )
+    filters: dict[str, str] = {}
+    try:
+        response = gemini.models.generate_content(
+            model=GENERATION_MODEL,
+            contents=prompt,
+            config=config,
+        )
+        data = json.loads(response.text)
+        invoice_date = data.get("invoice_date")
+        party_name = data.get("party_name")
+        if invoice_date:
+            filters["invoice_date"] = invoice_date
+        if party_name:
+            filters["party_name"] = party_name
+    except Exception:
+        filters = {}
+    return {**state, "filters": filters}
+
+
 def embed_query(state: RagState) -> RagState:
     gemini = _get_gemini()
     query_vector = _embed(gemini, state["query"])
@@ -184,7 +248,7 @@ def embed_query(state: RagState) -> RagState:
 
 def search_docs(state: RagState) -> RagState:
     search_client = _get_search_client()
-    hits = _search(search_client, state["query_vector"])
+    hits = _search(search_client, state["query_vector"], filters=state.get("filters"))
     return {**state, "search_hits": hits}
 
 
@@ -214,6 +278,7 @@ def build_graph():
     graph = StateGraph(RagState)
 
     graph.add_node("route_query", route_query)
+    graph.add_node("extract_filters", extract_filters)
     graph.add_node("embed_query", embed_query)
     graph.add_node("search_docs", search_docs)
     graph.add_node("check_relevance", check_relevance)
@@ -221,7 +286,8 @@ def build_graph():
     graph.add_node("refuse", refuse)
 
     graph.add_edge(START, "route_query")
-    graph.add_edge("route_query", "embed_query")
+    graph.add_edge("route_query", "extract_filters")
+    graph.add_edge("extract_filters", "embed_query")
     graph.add_edge("embed_query", "search_docs")
     graph.add_edge("search_docs", "check_relevance")
     graph.add_conditional_edges("check_relevance", _route_after_check, {
