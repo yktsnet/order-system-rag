@@ -1,7 +1,7 @@
 ## APIレイヤーの結合テスト
 id: 22
 branch-slug: api-integration-tests
-github_issue:
+github_issue: 39
 status: open
 type: feat
 対象: requirements.txt, tests/test_api.py (新規)
