@@ -20,6 +20,11 @@ nix-shell -p 'python3.withPackages (ps: with ps; [ google-genai azure-search-doc
   --run "python3 src/search/index.py"
 ```
 
+SQLite テーブル登録:
+```
+nix-shell -p python3 --run "python3 src/search/sqlite_load.py"
+```
+
 RAG API 起動:
 ```
 nix-shell -p 'python3.withPackages (ps: with ps; [
