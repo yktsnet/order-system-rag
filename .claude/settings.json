@@ -6,8 +6,8 @@
       "Bash(git push -f *)",
       "Bash(ssh *)",
       "Bash(rsync *)",
-      "Bash(*extract.py*)",
-      "Bash(*index.py*)"
+      "Bash(*python3 src/ingest/extract.py*)",
+      "Bash(*python3 src/search/index.py*)"
     ],
     "allow": [
       "Bash(git *)",
