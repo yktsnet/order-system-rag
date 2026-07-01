@@ -2,7 +2,7 @@
 id: 14
 branch-slug: sql-route
 github_issue: 23
-status: open
+status: close
 type: feat
 対象: src/generate/rag.py, src/api/main.py
 内容: `route_query`を`sql/rag`の2値に整理（`both`廃止）し、`generate_sql → execute_sql → format_sql_answer`ノードを追加。`add_conditional_edges`でSQL経路/RAG経路を実際に分岐させる
