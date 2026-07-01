@@ -217,6 +217,12 @@ nix-shell -p 'python3.withPackages (ps: with ps; [
 ])' --run "uvicorn src.api.main:app --reload --port 8002"
 ```
 
+### Run Tests
+
+```bash
+nix-shell -p 'python3.withPackages (ps: with ps; [ pytest pytest-mock fastapi ])' --run "pytest tests/"
+```
+
 ### Lint / Type Check
 
 ```bash
