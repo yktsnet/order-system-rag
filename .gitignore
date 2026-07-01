@@ -19,6 +19,9 @@ build/
 .venv/
 venv/
 
+# SQLite
+src/search/*.db
+
 # Node.js / Frontend
 node_modules/
 dist/
