@@ -21,6 +21,18 @@ jobs:
             src/ingest/extract.py \
             src/search/index.py \
             src/generate_samples.py
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: pytest
+        run: pytest tests/
   build-web:
     name: Frontend Build
     runs-on: ubuntu-latest
