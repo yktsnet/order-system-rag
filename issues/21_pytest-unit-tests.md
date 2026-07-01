@@ -1,7 +1,7 @@
 ## pytest基盤 + 純粋ロジックのユニットテスト
 id: 21
 branch-slug: pytest-unit-tests
-github_issue:
+github_issue: 37
 status: open
 type: feat
 対象: requirements.txt, tests/ (新規), tests/test_rag_logic.py (新規), tests/test_extract.py (新規), .github/workflows/ci.yml
