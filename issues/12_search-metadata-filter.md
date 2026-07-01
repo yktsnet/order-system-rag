@@ -1,7 +1,7 @@
 ## メタデータフィルタの接続
 id: 12
 branch-slug: search-metadata-filter
-github_issue:
+github_issue: 19
 status: open
 type: fix
 対象: src/generate/rag.py
