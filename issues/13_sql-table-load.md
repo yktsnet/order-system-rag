@@ -1,7 +1,7 @@
 ## PDF抽出データのSQLテーブル化
 id: 13
 branch-slug: sql-table-load
-github_issue:
+github_issue: 21
 status: open
 type: feat
 対象: src/search/sqlite_load.py（新規）
