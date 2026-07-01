@@ -2,7 +2,7 @@
 id: 13
 branch-slug: sql-table-load
 github_issue: 21
-status: open
+status: close
 type: feat
 対象: src/search/sqlite_load.py（新規）
 内容: `src/ingest/extracted/*.json`（Document Intelligenceで抽出済みの構造化フィールド）をSQLiteに登録するロードスクリプトを追加する。新規パイプラインではなく、`src/search/index.py`と同じ「抽出済みJSONを読んでDBに流す」形を横展開する
