@@ -149,6 +149,7 @@ export default function DocumentsTab() {
   const [isDragging, setIsDragging] = useState(false)
   const [toast, setToast] = useState<{ message: string; isError: boolean } | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     fetch(`${API_BASE}/files`)
@@ -198,6 +199,16 @@ export default function DocumentsTab() {
     setIsDragging(true)
   }
   const handleDragLeave = () => setIsDragging(false)
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      showToast('PDFファイルのみ対応しています', true)
+      return
+    }
+    showToast(`「${file.name}」をアップロードしました`)
+  }
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     setIsDragging(false)
@@ -234,16 +245,24 @@ export default function DocumentsTab() {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
         className={[
-          'rounded-lg border-2 border-dashed p-6 text-center transition-colors',
+          'rounded-lg border-2 border-dashed p-6 text-center transition-colors cursor-pointer',
           isDragging
             ? 'border-primary/60 bg-primary/5'
             : 'border-border hover:border-primary/30',
         ].join(' ')}
       >
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept=".pdf"
+          className="hidden"
+        />
         <Upload className="mx-auto mb-2 h-5 w-5 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">
-          PDF をここにドラッグ＆ドロップ（.pdf のみ対応）
+          PDF をここにドラッグ＆ドロップ、またはクリックして選択
         </p>
         <p className="mt-1.5 text-xs text-muted-foreground/70">
           ※デモ機能のため、ファイルのサーバー保存や解析処理は行われません
@@ -277,8 +296,8 @@ export default function DocumentsTab() {
       </div>
 
       {/* Table + Preview */}
-      <div className="flex gap-4">
-        <div className="min-w-0 flex-1 overflow-x-auto rounded-lg border bg-card">
+      <div className="flex flex-col md:flex-row gap-4 items-start">
+        <div className="w-full min-w-0 flex-1 overflow-x-auto rounded-lg border bg-card">
           {loading ? (
             <div className="p-8 text-center text-muted-foreground">読み込み中…</div>
           ) : fetchError ? (
@@ -291,9 +310,9 @@ export default function DocumentsTab() {
                 <TableRow>
                   <TableHead className="px-4 py-3">種別</TableHead>
                   <TableHead className="px-4 py-3">取引先名</TableHead>
-                  <TableHead className="px-4 py-3">帳票番号</TableHead>
+                  <TableHead className="hidden md:table-cell px-4 py-3">帳票番号</TableHead>
                   <TableHead className="px-4 py-3 text-right">金額</TableHead>
-                  <TableHead className="px-4 py-3">日付</TableHead>
+                  <TableHead className="hidden sm:table-cell px-4 py-3">日付</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -312,11 +331,11 @@ export default function DocumentsTab() {
                       </Badge>
                     </TableCell>
                     <TableCell className="px-4 py-3">{file.vendor_name || '—'}</TableCell>
-                    <TableCell className="px-4 py-3 font-mono text-muted-foreground">{file.invoice_id || '—'}</TableCell>
+                    <TableCell className="hidden md:table-cell px-4 py-3 font-mono text-muted-foreground">{file.invoice_id || '—'}</TableCell>
                     <TableCell className="px-4 py-3 text-right font-mono">
                       {formatCurrency(file.invoice_total)}
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-muted-foreground">{file.invoice_date ?? '—'}</TableCell>
+                    <TableCell className="hidden sm:table-cell px-4 py-3 text-muted-foreground">{file.invoice_date ?? '—'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -325,7 +344,7 @@ export default function DocumentsTab() {
         </div>
 
         {selectedFile && (
-          <Card className="w-80 shrink-0">
+          <Card className="w-full md:w-80 shrink-0">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium">帳票データの詳細</CardTitle>
