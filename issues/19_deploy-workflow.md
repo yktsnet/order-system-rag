@@ -1,7 +1,7 @@
 ## デプロイの CI 自動化
 id: 19
 branch-slug: deploy-workflow
-github_issue:
+github_issue: 33
 status: open
 type: feat
 対象: .github/workflows/deploy.yml (新規)
