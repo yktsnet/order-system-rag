@@ -1,7 +1,7 @@
 ## Text-to-SQL 用 DB をイメージビルド時にシードする
 id: 20
 branch-slug: seed-sql-db-on-build
-github_issue:
+github_issue: 35
 status: open
 type: fix
 対象: Dockerfile
