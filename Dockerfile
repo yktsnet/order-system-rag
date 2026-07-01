@@ -15,6 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ ./src/
 
+RUN python3 src/search/sqlite_load.py
+
 # Vite ビルド成果物を静的ファイルディレクトリに配置
 COPY --from=frontend /app/dist ./src/web/dist
 
