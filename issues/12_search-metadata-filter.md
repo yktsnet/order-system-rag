@@ -2,7 +2,7 @@
 id: 12
 branch-slug: search-metadata-filter
 github_issue: 19
-status: open
+status: close
 type: fix
 対象: src/generate/rag.py
 内容: `_search()`がベクトル検索のみで、インデックスに定義済みの`filter`可能フィールド（`invoice_date`・`vendor_name`等）を一切使っていない。質問文から日付・取引先名を抽出し、Azure AI Searchの`filter`パラメータに接続する
