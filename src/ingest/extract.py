@@ -81,6 +81,8 @@ def analyze_pdf(client, pdf_path):
     )
     result = poller.result()
 
+    doc_type = pdf_path.stem.split("_")[0]
+
     documents = []
     for doc in (result.documents or []):
         fields = doc.fields or {}
@@ -91,7 +93,7 @@ def analyze_pdf(client, pdf_path):
                 items.append(extract_item(item_field))
 
         extracted = {
-            "doc_type": doc.doc_type,
+            "doc_type": doc_type,
             "confidence": doc.confidence,
             "vendor_name": extract_field(fields.get("VendorName")),
             "vendor_address": extract_field(fields.get("VendorAddress")),
