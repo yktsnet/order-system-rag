@@ -2,7 +2,7 @@
 id: 20
 branch-slug: seed-sql-db-on-build
 github_issue: 35
-status: open
+status: close
 type: fix
 対象: Dockerfile
 内容: `src/search/order_system_rag.db` は `.gitignore` 対象のビルド成果物で、`src/search/sqlite_load.py` を実行しないと生成されない。本番デプロイ（`docker compose up -d --build`）ではこのシード手順が一度も走らないため、Text-to-SQL パネルが常に「データベースへの接続エラー」を返す。Dockerfile の Python 実行ステージに `sqlite_load.py` 実行を追加し、イメージビルド時に DB を焼き込む。
