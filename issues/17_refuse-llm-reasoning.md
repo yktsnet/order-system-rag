@@ -1,7 +1,7 @@
 ## 無回答応答を固定文言からLLM推論に変更
 id: 17
 branch-slug: refuse-llm-reasoning
-github_issue:
+github_issue: 29
 status: open
 type: feat
 対象: src/generate/rag.py, src/api/main.py
