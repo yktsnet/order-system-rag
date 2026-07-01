@@ -1,7 +1,7 @@
 ## doc_typeの正しい分類
 id: 11
 branch-slug: doc-type-fix
-github_issue:
+github_issue: 17
 status: open
 type: fix
 対象: src/ingest/extract.py, src/ingest/extracted/*.json（再生成）
