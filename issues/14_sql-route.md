@@ -1,7 +1,7 @@
 ## SQL経路の実装とルーティング配線
 id: 14
 branch-slug: sql-route
-github_issue:
+github_issue: 23
 status: open
 type: feat
 対象: src/generate/rag.py, src/api/main.py
