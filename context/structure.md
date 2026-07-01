@@ -57,9 +57,9 @@ FastAPI POST /rag → RagResponseModel
 
 ## 無回答ポリシー
 
-- RAG経路: `RELEVANCE_THRESHOLD = 0.70`。スコアがすべて閾値未満の場合はLLMを呼ばず固定文言を返し`refused: true`をセット（conditional_edgesによる決定的分岐）。
-- SQL経路: 生成したSQLが`SELECT`文でない・禁止キーワードを含む・schema外のカラムを参照する場合は実行せず、実行結果が0件の場合も含めて`sql_error`経由で無回答扱いにする（`_is_safe_select`）。
-- 両経路とも現状は固定文言（「該当する情報が見つかりませんでした。」）。理由をLLMに推論させる形への変更はPLAN.md Step 3で未着手。
+- RAG経路: `RELEVANCE_THRESHOLD = 0.70`。スコアがすべて閾値未満の場合は`refused: true`をセットする決定的分岐（`check_relevance`→`conditional_edges`）は変わらないが、`refuse`ノードはLLMに理由を推論させて返す（検索したフィルタ条件・最高スコア・ルーティング理由のみを根拠にし、文書内容は渡さない）。Gemini呼び出しが失敗した場合のみ固定文言にフォールバックする。
+- SQL経路: 生成したSQLが`SELECT`文でない・禁止キーワードを含む・schema外のカラムを参照する場合は実行せず、実行結果が0件の場合も含めて`sql_error`経由で無回答扱いにする（`_is_safe_select`）。`format_sql_answer`は同様にLLMへ`sql_error`・ルーティング理由・（SQL生成自体に失敗した場合は）`sql_generation_reason`を渡して理由を推論させる。
+- 「根拠が無ければ断定しない」原則は維持したまま、理由の言語化のみLLMに委ねる設計（README.md「安全境界」参照）。
 
 ## API スキーマ
 
