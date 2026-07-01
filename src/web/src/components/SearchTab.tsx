@@ -492,31 +492,47 @@ export default function SearchTab() {
 
       {/* 下部入力バーエリア */}
       <div className="p-4 border-t border-border bg-card/90 backdrop-blur-md">
-        <div className="max-w-3xl mx-auto flex gap-2.5 items-center">
-          <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isSubmitting}
-              placeholder="帳票について質問してください… (例: 東京商事の支払期限は？)"
-              className="flex h-11 w-full rounded-full border border-input bg-background pl-10 pr-4 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            />
+        {turns.length > 0 ? (
+          // RAG は1問1答の比較Demoのため、会話継続ではなく都度クリアして再質問する
+          <div className="max-w-3xl mx-auto flex items-center justify-center gap-2 py-1.5 text-xs text-muted-foreground">
+            <span>この Demo は1問ごとに独立して回答します。続けて質問するには</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setTurns([])}
+              className="h-6 gap-1 px-2 text-xs"
+            >
+              <RotateCcw className="h-3 w-3" />
+              チャットをクリア
+            </Button>
           </div>
-          <Button
-            onClick={() => handleSend(input)}
-            disabled={!input.trim() || isSubmitting}
-            className="h-11 w-11 rounded-full shrink-0 p-0 flex items-center justify-center active:scale-95 duration-200"
-          >
-            {isSubmitting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
+        ) : (
+          <div className="max-w-3xl mx-auto flex gap-2.5 items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isSubmitting}
+                placeholder="帳票について質問してください… (例: 東京商事の支払期限は？)"
+                className="flex h-11 w-full rounded-full border border-input bg-background pl-10 pr-4 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+            <Button
+              onClick={() => handleSend(input)}
+              disabled={!input.trim() || isSubmitting}
+              className="h-11 w-11 rounded-full shrink-0 p-0 flex items-center justify-center active:scale-95 duration-200"
+            >
+              {isSubmitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )
