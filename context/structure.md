@@ -11,9 +11,10 @@ order-system-rag/
 │   │   ├── extract.py        # Azure Document Intelligence で PDF → JSON 変換
 │   │   └── extracted/        # 抽出済み JSON（PDF から構造化抽出した成果物）
 │   ├── search/
-│   │   └── index.py          # Gemini embedding + Azure AI Search インデックス登録
+│   │   ├── index.py          # Gemini embedding + Azure AI Search インデックス登録
+│   │   └── sqlite_load.py    # 抽出済みJSON → SQLite（documents/items テーブル）登録
 │   ├── generate/
-│   │   └── rag.py            # LangGraph StateGraph（ルーティング → 検索 → 生成）
+│   │   └── rag.py            # LangGraph StateGraph（ルーティング → SQL経路 / RAG経路 → 生成）
 │   ├── api/
 │   │   └── main.py           # FastAPI エンドポイント（POST /rag, GET /files, GET /health）
 │   └── web/                  # React Demo UI（Vite + shadcn/ui + Catppuccin Latte）
@@ -35,11 +36,16 @@ src/samples/*.pdf
     ↓ ingest/extract.py  (Azure Document Intelligence prebuilt-invoice)
 src/ingest/extracted/*.json
     ↓ search/index.py  (Gemini gemini-embedding-001 → Azure AI Search HNSW)
-Azure AI Search: order-system-rag-index（ベクトル次元 3072）
+    ↓ search/sqlite_load.py  (documents/items テーブル)
+Azure AI Search: order-system-rag-index（ベクトル次元 3072）／ src/search/order_system_rag.db
     ↓ generate/rag.py  LangGraph StateGraph:
-        route_query → embed_query → search_docs → check_relevance → generate_answer / refuse
+        route_query
+          ├─ (route=sql)  generate_sql → execute_sql → format_sql_answer
+          └─ (route=rag)  extract_filters → embed_query → search_docs → check_relevance → generate_answer / refuse
 FastAPI POST /rag → RagResponseModel
 ```
+
+`route_query`はLLM構造化出力で`sql`/`rag`を判定する。分類結果は常にstateに残るが、リクエストに`force_route`があれば実行経路はそちらを優先する（SearchTab.tsxの2カラム比較はRAG/SQL経路を強制指定して2回呼び出す）。
 
 ## 主要な外部依存
 
@@ -47,13 +53,15 @@ FastAPI POST /rag → RagResponseModel
 |---|---|---|
 | Azure Document Intelligence | PDF 構造化抽出（prebuilt-invoice） | `AZURE_DOCUMENT_INTELLIGENCE_` |
 | Azure AI Search | ベクトル検索インデックス | `AZURE_SEARCH_` |
-| Gemini API | embedding + テキスト生成 + ルーティング判定 | `GEMINI_API_KEY` |
+| Gemini API | embedding + テキスト生成 + ルーティング判定 + SQL生成 | `GEMINI_API_KEY` |
 
 ## 無回答ポリシー
 
-`generate/rag.py` の `RELEVANCE_THRESHOLD = 0.70`: スコアがすべて閾値未満の場合は LLM を呼ばず固定文言を返し `refused: true` をセット。conditional_edges による決定的分岐。
+- RAG経路: `RELEVANCE_THRESHOLD = 0.70`。スコアがすべて閾値未満の場合はLLMを呼ばず固定文言を返し`refused: true`をセット（conditional_edgesによる決定的分岐）。
+- SQL経路: 生成したSQLが`SELECT`文でない・禁止キーワードを含む・schema外のカラムを参照する場合は実行せず、実行結果が0件の場合も含めて`sql_error`経由で無回答扱いにする（`_is_safe_select`）。
+- 両経路とも現状は固定文言（「該当する情報が見つかりませんでした。」）。理由をLLMに推論させる形への変更はPLAN.md Step 3で未着手。
 
 ## API スキーマ
 
-`POST /rag` リクエスト: `{ "question": "..." }`
-レスポンス: `{ "answer", "refused", "generation_model", "query_embedding_dim", "route", "route_reason", "search_results": [...] }`
+`POST /rag` リクエスト: `{ "question": "...", "force_route": "sql" | "rag" | null }`
+レスポンス: `{ "answer", "refused", "generation_model", "query_embedding_dim", "route", "route_reason", "search_results": [...], "sql_query", "sql_rows": [...] }`

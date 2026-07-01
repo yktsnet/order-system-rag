@@ -34,10 +34,10 @@ nix-shell -p 'python3.withPackages (ps: with ps; [
 
 ## アーキテクチャの要点
 
-3ステージパイプライン:
+パイプライン:
 1. **抽出**: `src/ingest/extract.py` — Azure Document Intelligence で PDF → JSON（`src/ingest/extracted/`）
-2. **インデックス**: `src/search/index.py` — Gemini embedding → Azure AI Search（次元数 3072）
-3. **検索・生成**: `src/generate/rag.py` — ベクトル検索（スコア閾値 0.70）→ Gemini でテキスト生成
+2. **インデックス**: `src/search/index.py` — Gemini embedding → Azure AI Search（次元数 3072）／`src/search/sqlite_load.py` — 同じJSONをSQLite（`documents`/`items`）に登録
+3. **ルーティング・検索・生成**: `src/generate/rag.py` — LangGraph StateGraphで`sql`/`rag`を判定し、SQL経路（`generate_sql → execute_sql → format_sql_answer`）またはRAG経路（ベクトル検索、スコア閾値0.70）を実行
 
 依存管理は nix-shell の使い捨て環境。pip install 不要。環境変数は `.env`（`.env.example` 参照）。
 
@@ -45,7 +45,7 @@ nix-shell -p 'python3.withPackages (ps: with ps; [
 
 バックエンド（構文チェック）:
 ```
-nix-shell -p python3 --run "python3 -m py_compile src/api/main.py src/generate/rag.py src/ingest/extract.py src/search/index.py src/generate_samples.py"
+nix-shell -p python3 --run "python3 -m py_compile src/api/main.py src/generate/rag.py src/ingest/extract.py src/search/index.py src/search/sqlite_load.py src/generate_samples.py"
 ```
 
 フロントエンド（型チェック / ビルド）:
