@@ -121,6 +121,35 @@ SYSTEM_PROMPT = """\
 - 金額は3桁区切りのカンマ付きで表示してください。
 """
 
+FALLBACK_REFUSAL_TEXT = "該当する情報が見つかりませんでした。"
+
+REFUSE_PROMPT = """\
+あなたは発注業務の帳票検索アシスタントです。
+ユーザーの質問に対して帳票データを検索しましたが、関連度が十分な文書が見つかりませんでした。
+以下の検索条件だけを手がかりに、質問者に「何を探して見つからなかったか」を1〜2文で簡潔に説明してください。
+文書の中身は与えられていません。内容を推測して回答してはいけません。断定的な回答も禁止です。
+
+## 質問
+{query}
+
+## 検索条件
+- 絞り込み条件: {filters}
+- 最も近かった候補のスコア: {best_score}（関連度しきい値 {threshold} 未満のため不採用）
+"""
+
+SQL_REFUSE_PROMPT = """\
+あなたは発注業務の帳票検索アシスタントです。
+ユーザーの質問に対してSQLでデータ検索を試みましたが、回答できませんでした。
+以下の理由だけを根拠に、質問者になぜ回答できなかったかを1〜2文で簡潔に説明してください。
+存在しないデータを補って回答してはいけません。断定的な回答も禁止です。
+
+## 質問
+{query}
+
+## 回答できなかった理由
+{sql_error}
+"""
+
 
 @dataclass
 class SearchResult:
@@ -262,6 +291,28 @@ def _generate(gemini: genai.Client, query: str, context: str) -> str:
     return response.text
 
 
+def _format_filters_for_prompt(filters: dict[str, str] | None) -> str:
+    if not filters:
+        return "指定なし"
+    parts = []
+    if filters.get("invoice_date"):
+        parts.append(f"日付: {filters['invoice_date']}")
+    if filters.get("party_name"):
+        parts.append(f"取引先: {filters['party_name']}")
+    return "、".join(parts) if parts else "指定なし"
+
+
+def _generate_refusal_reason(prompt: str) -> str:
+    """無回答理由をLLMに推論させる。失敗時は固定文言にフォールバックし、例外は上げない。"""
+    try:
+        gemini = _get_gemini()
+        response = gemini.models.generate_content(model=GENERATION_MODEL, contents=prompt)
+        text = (response.text or "").strip()
+        return text if text else FALLBACK_REFUSAL_TEXT
+    except Exception:
+        return FALLBACK_REFUSAL_TEXT
+
+
 # ─── LangGraph ノード ────────────────────────────────────────────────────────────
 
 def route_query(state: RagState) -> RagState:
@@ -346,7 +397,16 @@ def generate_answer(state: RagState) -> RagState:
 
 
 def refuse(state: RagState) -> RagState:
-    return {**state, "answer": "該当する情報が見つかりませんでした。", "refused": True}
+    hits = state.get("search_hits", [])
+    best_score = max((h.score for h in hits), default=None)
+    prompt = REFUSE_PROMPT.format(
+        query=state["query"],
+        filters=_format_filters_for_prompt(state.get("filters")),
+        best_score=f"{best_score:.4f}" if best_score is not None else "該当なし",
+        threshold=RELEVANCE_THRESHOLD,
+    )
+    answer = _generate_refusal_reason(prompt)
+    return {**state, "answer": answer, "refused": True}
 
 
 def _is_safe_select(sql: str) -> bool:
@@ -405,7 +465,9 @@ def execute_sql(state: RagState) -> RagState:
 
 def format_sql_answer(state: RagState) -> RagState:
     if state.get("sql_error"):
-        return {**state, "answer": "該当する情報が見つかりませんでした。", "refused": True}
+        prompt = SQL_REFUSE_PROMPT.format(query=state["query"], sql_error=state["sql_error"])
+        answer = _generate_refusal_reason(prompt)
+        return {**state, "answer": answer, "refused": True}
     gemini = _get_gemini()
     prompt = SQL_ANSWER_PROMPT.format(
         sql_query=state.get("sql_query", ""),
