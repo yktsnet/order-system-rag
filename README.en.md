@@ -233,3 +233,7 @@ cd src/web && npm ci && npm run build
 ```
 
 > Document Intelligence and AI Search have no local emulator. Index rebuilding (`src/ingest/extract.py`, `src/search/index.py`) uses Azure's free tiers (F0 / Free) directly.
+
+## How this was built
+
+Development follows an issue-driven workflow that separates design (interactive AI), implementation (autonomous AI), and verification (human merge). An AI agent implements each change starting from an issue file, and dangerous operations are blocked by configuration rather than by convention. The setup lives in [dotfiles-public](https://github.com/yktsnet/dotfiles-public); the process itself is visible in this repository's issues and PRs.
