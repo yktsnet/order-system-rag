@@ -1,5 +1,5 @@
 # --- フロントエンドビルド ---
-FROM node:20-slim AS frontend
+FROM node:26-slim AS frontend
 WORKDIR /app
 COPY src/web/package*.json ./
 RUN npm ci
