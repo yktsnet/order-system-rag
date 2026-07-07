@@ -7,7 +7,7 @@ COPY src/web/ ./
 RUN npm run build
 
 # --- Python 実行 ---
-FROM python:3.12-slim
+FROM python:3.14-slim
 WORKDIR /app
 
 COPY requirements.txt .
