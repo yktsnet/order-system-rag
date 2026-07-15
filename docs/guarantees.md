@@ -32,6 +32,16 @@
 | `/pdf/{filename}` 拡張子バリデーション | `test_get_pdf_non_pdf_extension_returns_400` |
 | `/health` | `test_health_returns_ok` |
 
+### 2. `tests/test_rag_logic.py` — src/generate/rag.py（SQL 実行の被害境界）
+
+- `POST /rag` が実行しうる SQL は `SELECT` 文のみ。生成された SQL が `SELECT` 始まりでない場合、または禁止キーワード（`INSERT`/`UPDATE`/`DELETE`/`DROP`/`ALTER`/`CREATE`/`REPLACE`/`PRAGMA`/`ATTACH`/`DETACH`/`VACUUM`）を単語として含む場合（`SELECT ...; DROP ...` のような複文もこの判定で拒否される）、その SQL は実行されない
+- この判定は `_is_safe_select` という内部関数の実装だが、「SELECT 以外を実行しない」という性質自体は API の安全保証として約束する（実装の置き換えは自由、性質の放棄は不可）
+
+| 保証（要約） | 対応テスト |
+|---|---|
+| 正当な SELECT（前後空白・小文字含む）は許可 | `test_is_safe_select_accepts_valid_select` |
+| 更新系・DDL・PRAGMA・複文は拒否 | `test_is_safe_select_rejects_forbidden` |
+
 ## Gaps
 
 以下は保証すべきと思われるが、対応するテストが無い。
@@ -42,4 +52,4 @@
 
 ## About
 
-対象は `src/api/main.py` が公開する FastAPI エンドポイント（`POST /rag`, `GET /files`, `GET /files/{filename}`, `GET /pdf/{filename}`, `GET /health`）の HTTP レベルの入出力契約のみ。`src/generate/rag.py`（`_is_safe_select` 等のアンダースコア始まり関数群、および `check_relevance`/`RELEVANCE_THRESHOLD` を含むルーティング・検索・生成ロジック全般）と `src/ingest/extract.py`（`extract_field`/`extract_currency`/`extract_item` 等）はいずれも `tests/test_api.py` の docstring が明言する通り外部から直接呼び出されない内部実装であり対象外（`tests/test_rag_logic.py`・`tests/test_extract.py` はこれら内部実装のユニットテストであり、本台帳の対象に含めない）。DIST_DIR が存在する場合のみ有効になる静的ファイル配信（`/` および SPA アセット）も対象外。**ここに載っていない振る舞いは約束ではなく、予告なく変わりうる。** 本台帳は docs/design-decisions.md 相当のドキュメントと同格の位置づけとする。
+対象は `src/api/main.py` が公開する FastAPI エンドポイント（`POST /rag`, `GET /files`, `GET /files/{filename}`, `GET /pdf/{filename}`, `GET /health`）の HTTP レベルの入出力契約のみ。`src/generate/rag.py`（`_is_safe_select` 等のアンダースコア始まり関数群、および `check_relevance`/`RELEVANCE_THRESHOLD` を含むルーティング・検索・生成ロジック全般）と `src/ingest/extract.py`（`extract_field`/`extract_currency`/`extract_item` 等）はいずれも `tests/test_api.py` の docstring が明言する通り外部から直接呼び出されない内部実装であり対象外（`tests/test_rag_logic.py`・`tests/test_extract.py` はこれら内部実装のユニットテストであり、本台帳の対象に含めない。例外として、`_is_safe_select` が担う「SELECT 以外の SQL を実行しない」という性質は API の安全保証として第2節に載せる）。DIST_DIR が存在する場合のみ有効になる静的ファイル配信（`/` および SPA アセット）も対象外。**ここに載っていない振る舞いは約束ではなく、予告なく変わりうる。** 本台帳は docs/design-decisions.md 相当のドキュメントと同格の位置づけとする。
