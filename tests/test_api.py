@@ -116,6 +116,15 @@ def test_list_files_returns_all_extracted_documents():
     assert all(expected_keys <= item.keys() for item in body)
 
 
+def test_list_files_returns_documents_in_filename_order():
+    response = client.get("/files")
+
+    assert response.status_code == 200
+    source_files = [item["source_file"] for item in response.json()]
+    # 抽出JSONのファイル名（source_fileと同一ステム）のソート順で返る
+    assert source_files == sorted(source_files)
+
+
 # ─── GET /files/{filename} ────────────────────────────────────────────────────
 
 def test_get_file_existing_returns_json():
@@ -165,3 +174,14 @@ def test_health_returns_ok():
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
+
+# ─── CORS ─────────────────────────────────────────────────────────────────────
+
+def test_cors_allows_configured_origin():
+    # CORS_ORIGINS（本ファイル冒頭で http://localhost:5173 に設定）がレスポンスヘッダーに反映される
+    origin = "http://localhost:5173"
+    response = client.get("/health", headers={"Origin": origin})
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == origin

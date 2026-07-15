@@ -16,6 +16,8 @@
 - `GET /pdf/{filename}` は存在しない PDF ファイル名を渡すと 404 を返す
 - `GET /pdf/{filename}` は `.pdf` 以外の拡張子を渡すと 400 を返す
 - `GET /health` は 200 で `{"status": "ok"}` を返す
+- `GET /files` のレスポンス配列は抽出済み JSON のファイル名昇順で返る
+- `CORS_ORIGINS` 環境変数で許可したオリジンからのリクエストには、`access-control-allow-origin` ヘッダーにそのオリジンが反映される
 
 | 保証（要約） | 対応テスト |
 |---|---|
@@ -31,6 +33,8 @@
 | `/pdf/{filename}` 404 | `test_get_pdf_not_found_returns_404` |
 | `/pdf/{filename}` 拡張子バリデーション | `test_get_pdf_non_pdf_extension_returns_400` |
 | `/health` | `test_health_returns_ok` |
+| `/files` のファイル名昇順 | `test_list_files_returns_documents_in_filename_order` |
+| CORS 許可オリジンの反映 | `test_cors_allows_configured_origin` |
 
 ### 2. `tests/test_rag_logic.py` — src/generate/rag.py（SQL 実行の被害境界）
 
@@ -47,8 +51,6 @@
 以下は保証すべきと思われるが、対応するテストが無い。
 
 - `GET /pdf/{filename}` は `SAMPLES_DIR` の外を指すパスを渡した場合に 400 を返すコード（`is_relative_to` チェック）を持つが、この経路を単体で再現する HTTP リクエストが無い。単一セグメントのパスパラメータのため埋め込みスラッシュはルーティング自体で 404 になり、スラッシュを含まない `..` 単体は先に拡張子チェック（`.pdf` で終わらない）で 400 になり、POSIX 環境ではバックスラッシュもパス区切りとして機能しないため、`is_relative_to` チェックそのものを単独で通過・拒否させる入力を構成できない（到達不能に近い防御コード）
-- `GET /files` のレスポンス配列の順序保証（`sorted(EXTRACTED_DIR.glob("*.json"))` によるソート順）は未検証
-- `CORS_ORIGINS` 環境変数で指定した許可オリジンが実際のレスポンスヘッダーに反映されることは未検証
 
 ## About
 
