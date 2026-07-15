@@ -131,6 +131,12 @@ def test_get_file_not_found_returns_404():
     assert response.status_code == 404
 
 
+def test_get_file_path_traversal_returns_400():
+    response = client.get("/files/%2e%2e")
+
+    assert response.status_code == 400
+
+
 # ─── GET /pdf/{filename} ──────────────────────────────────────────────────────
 
 def test_get_pdf_existing_returns_pdf():
